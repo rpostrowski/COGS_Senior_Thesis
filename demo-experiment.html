@@ -19,16 +19,45 @@
 
     var welcome = {
       type: jsPsychHtmlKeyboardResponse,
-      stimulus: "Welcome to the experiment. Press any key to begin."
+      stimulus: "Welcome to the experiment. Press the space bar to begin.",
+      choices: " "
       };
-  
-    var trial = {
-      type: jsPsychAudioButtonResponse,
-      stimulus: 'audio/MagicCandle-BenVanBonn.mp3',
-      choices: ["Choice A", "Choice B", "Choice C"],
-      prompt: "<p>Listen to the audio clip and then select a response.</p>",
-    };
 
-    jsPsych.run([welcome, trial]);
+    var audioFiles = ['EQ_-36dB.wav', 'EQ_-18dB.wav', 'EQ_-6dB.wav', 'EQ_0dB.wav',
+                      'unmasked_-36dB.wav', 'unmasked_-18dB.wav', 'unmasked_-6dB.wav', 'unmasked_0dB.wav'];
+
+    jsPsych.randomization.shuffle(audioFiles);
+
+    var trial = {
+        type: jsPsychAudioButtonResponse,
+        stimulus: 'audio/' + audioFiles[i],
+        prompt: '<p>Choose one of the buttons after the audio finishes playing.</p>',
+        choices: ['One instrument', 'Two instruments'],
+      };
+
+    var trials = [];
+
+    for (var i = 0; i < audioFiles.length; i++) {
+      var trial = {
+        type: jsPsychAudioButtonResponse,
+        stimulus: 'audio/' + audioFiles[i],
+        prompt: '<p>Choose one of the buttons after the audio finishes playing.</p>',
+        choices: ['One instrument', 'Two instruments'],
+      };
+
+      trials.push(trial);
+    }
+
+    var timeline = [welcome].concat(trials);
+
+    var end = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: "Thanks for your participation!",
+      choices: " "
+      };
+
+    timeline.push(end)
+
+    jsPsych.run(timeline);
   </script>
 </html>
