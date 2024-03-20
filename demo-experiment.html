@@ -30,99 +30,103 @@
 
     timeline.push(welcome);
 
-    // var calibration_tone = {
-    //   type: jsPsychAudioButtonResponse,
-    //   stimulus: "headphone_check_files/noise_calib_stim.wav",
-    //   prompt: "<br>Please adjust your volume so that the tone is playing at a comfortable loudness.",
-    //   choices: ["Replay", "Continue"],
-    //   response_allowed_while_playing: false,
-    //   on_finish: function(data){
-    //     console.log(data.response)
+// HEADPHONE CHECK
+    var calibration_tone = {
+      type: jsPsychAudioButtonResponse,
+      stimulus: "headphone_check_files/noise_calib_stim.wav",
+      prompt: "<br>Please adjust your volume so that the tone is playing at a comfortable loudness.",
+      choices: ["Replay", "Continue"],
+      response_allowed_while_playing: false,
+      on_finish: function(data){
+        console.log(data.response)
 
-    //     if (data.response == 1) {
-    //       jsPsych.endCurrentTimeline()
-    //       console.log("Continuing.")
-    //     }
-    //   }
-    // }
+        if (data.response == 1) {
+          jsPsych.endCurrentTimeline()
+          console.log("Continuing.")
+        }
+      }
+    }
 
-    // var ok_enough = {
-    //   type: jsPsychHtmlKeyboardResponse,
-    //   stimulus: "That's enough.  Press the space bar to continue.",
-    //   choices: " ",
-    // }
+    var ok_enough = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: "That's enough.  Press the space bar to continue.",
+      choices: " ",
+    }
 
-    // var volume_calibration = {
-    //   timeline: [calibration_tone, calibration_tone, calibration_tone, calibration_tone, ok_enough]
-    // }
+    var volume_calibration = {
+      timeline: [calibration_tone, calibration_tone, calibration_tone, calibration_tone, ok_enough]
+    }
 
-    // timeline.push(volume_calibration)
+    timeline.push(volume_calibration)
 
-    // var headphones_instr = {
-    //   type: jsPsychHtmlKeyboardResponse,
-    //   stimulus: `When you hit Play, you will hear three sounds separated by silences.<br><br>
-    //               Simply judge WHICH SOUND WAS SOFTEST (quietest) -- 1, 2, or 3?<br><br>
-    //               Test sounds will only play once!<br><br>
-    //               Press the space bar to continue.`,
-    //   choices: " ",
-    // }
+    var headphones_instr = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: `When you hit Play, you will hear three sounds separated by silences.<br><br>
+                  Simply judge WHICH SOUND WAS SOFTEST (quietest) -- 1, 2, or 3?<br><br>
+                  Test sounds will only play once!<br><br>
+                  Press the space bar to continue.`,
+      choices: " ",
+    }
 
-    // timeline.push(headphones_instr)
+    timeline.push(headphones_instr)
 
-    // var headphone_audio = [
-    //   { stimulus: "headphone_check_files/antiphase_HC_ISO.wav", correct_response: 1},
-    //   { stimulus: "headphone_check_files/antiphase_HC_IOS.wav", correct_response: 2},
-    //   { stimulus: "headphone_check_files/antiphase_HC_SOI.wav", correct_response: 0},
-    //   { stimulus: "headphone_check_files/antiphase_HC_SIO.wav", correct_response: 0},
-    //   { stimulus: "headphone_check_files/antiphase_HC_OSI.wav", correct_response: 1},
-    //   { stimulus: "headphone_check_files/antiphase_HC_OIS.wav", correct_response: 2}
-    // ];
+    var headphone_audio = [
+      { stimulus: "headphone_check_files/antiphase_HC_ISO.wav", correct_response: 1},
+      { stimulus: "headphone_check_files/antiphase_HC_IOS.wav", correct_response: 2},
+      { stimulus: "headphone_check_files/antiphase_HC_SOI.wav", correct_response: 0},
+      { stimulus: "headphone_check_files/antiphase_HC_SIO.wav", correct_response: 0},
+      { stimulus: "headphone_check_files/antiphase_HC_OSI.wav", correct_response: 1},
+      { stimulus: "headphone_check_files/antiphase_HC_OIS.wav", correct_response: 2}
+    ];
 
-    // var test = {
-    //   type: jsPsychAudioButtonResponse,
-    //   stimulus: jsPsych.timelineVariable('stimulus'),
-    //   prompt: "<br>Which was the softest?",
-    //   choices: ['First', 'Second', 'Third'],
-    //   // response_allowed_while_playing: false,
-    //   data: {
-    //     task: 'headphone_check',
-    //     correct_response: jsPsych.timelineVariable('correct_response')
-    //   },
-    //   on_start: function(data){
-    //     console.log(jsPsych.timelineVariable('correct_response'))
-    //   },
-    //   on_finish: function(data){
-    //     console.log(data.correct_response)
+    var test = {
+      type: jsPsychAudioButtonResponse,
+      stimulus: jsPsych.timelineVariable('stimulus'),
+      prompt: "<br>Which was the softest?",
+      choices: ['First', 'Second', 'Third'],
+      // response_allowed_while_playing: false,
+      data: {
+        task: 'headphone_check',
+        correct_response: jsPsych.timelineVariable('correct_response')
+      },
+      on_start: function(data){
+        console.log(jsPsych.timelineVariable('correct_response'))
+      },
+      on_finish: function(data){
+        console.log(data.correct_response)
 
-    //     data.correct = (data.response === data.correct_response);
-    //     console.log(data.correct);
-    //   }
-    // }
+        data.correct = (data.response === data.correct_response);
+        console.log(data.correct);
+      }
+    }
 
-    // var headphone_check = {
-    //   timeline: [test],
-    //   timeline_variables: headphone_audio,
-    //   randomize_order: false,
-    //   // randomize_order: true,
-    // };
+    var headphone_check = {
+      timeline: [test],
+      timeline_variables: headphone_audio,
+      randomize_order: false,
+      // randomize_order: true,
+    };
 
-    // timeline.push(headphone_check)
+    timeline.push(headphone_check)
 
-    // var headphone_eval = {
-    //   type: jsPsychHtmlKeyboardResponse,
-    //   stimulus: function() {
+    var headphone_eval = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: function() {
 
-    //     var trials = jsPsych.data.get().filter({task: 'headphone_check'});
-    //     var correct_trials = trials.filter({correct: true});
-    //     if (correct_trials.count() > 5)
-    //       return `<p>You passed the headphone check.</p>`
-    //     else
-    //       return `<p>You didn't pass the headphone check.</p>`
-    //   }
-    // };
+        var trials = jsPsych.data.get().filter({task: 'headphone_check'});
+        var correct_trials = trials.filter({correct: true});
+        if (correct_trials.count() > 5)
+          return `<p>You passed the headphone check.</p>`
+        else
+          return `<p>You didn't pass the headphone check.</p>`
+      }
+    };
     
-    // timeline.push(headphone_eval);
+    timeline.push(headphone_eval);
 
+
+
+// DEMO AUDIO TRIALS
     var audioFiles = ['EQ_-36dB.wav', 'EQ_-18dB.wav', 'EQ_-6dB.wav', 'EQ_0dB.wav',
                       'unmasked_-36dB.wav', 'unmasked_-18dB.wav', 'unmasked_-6dB.wav', 'unmasked_0dB.wav'];
 
