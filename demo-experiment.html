@@ -6,9 +6,6 @@
     <script src="jspsych/plugin-preload.js"></script>
     <script src="jspsych/plugin-html-keyboard-response.js"></script>
     <script src="jspsych/plugin-audio-button-response.js"></script>
-    <script>
-      import jsPsychCorsiBlocks from '@jspsych-contrib/plugin-corsi-blocks';
-    </script>
     <link href="jspsych/jspsych.css" rel="stylesheet" type="text/css" />
     
   </head>
@@ -33,14 +30,6 @@
       };
 
     timeline.push(welcome);
-
-    const show_sequence = {
-      type: jsPsychCorsiBlocks,
-      sequence: [3,1],
-      mode: 'display'
-    };
-
-    timeline.push(show_sequence);
 
 // HEADPHONE CHECK
     var calibration_tone = {
@@ -69,7 +58,7 @@
       timeline: [calibration_tone, calibration_tone, calibration_tone, calibration_tone, ok_enough]
     }
 
-    timeline.push(volume_calibration)
+    timeline.push(volume_calibration);
 
     var headphones_instr = {
       type: jsPsychHtmlKeyboardResponse,
@@ -80,7 +69,7 @@
       choices: " ",
     }
 
-    timeline.push(headphones_instr)
+    timeline.push(headphones_instr);
 
     var headphone_audio = [
       { stimulus: "headphone_check_files/antiphase_HC_ISO.wav", correct_response: 1},
@@ -96,17 +85,16 @@
       stimulus: jsPsych.timelineVariable('stimulus'),
       prompt: "<br>Which was the softest?",
       choices: ['First', 'Second', 'Third'],
-      // response_allowed_while_playing: false,
+      response_allowed_while_playing: false,
       data: {
         task: 'headphone_check',
         correct_response: jsPsych.timelineVariable('correct_response')
       },
       on_start: function(data){
-        console.log(jsPsych.timelineVariable('correct_response'))
+        // console.log(jsPsych.timelineVariable('correct_response'))
       },
       on_finish: function(data){
-        console.log(data.correct_response)
-
+        // console.log(data.correct_response)
         data.correct = (data.response === data.correct_response);
         console.log(data.correct);
       }
@@ -119,7 +107,7 @@
       // randomize_order: true,
     };
 
-    timeline.push(headphone_check)
+    timeline.push(headphone_check);
 
     var headphone_eval = {
       type: jsPsychHtmlKeyboardResponse,
@@ -139,100 +127,100 @@
 
 
 // DEMO AUDIO TRIALS
-    var audioFiles = ['EQ_-36dB.wav', 'EQ_-18dB.wav', 'EQ_-6dB.wav', 'EQ_0dB.wav',
-                      'unmasked_-36dB.wav', 'unmasked_-18dB.wav', 'unmasked_-6dB.wav', 'unmasked_0dB.wav'];
+    // var audioFiles = ['EQ_-36dB.wav', 'EQ_-18dB.wav', 'EQ_-6dB.wav', 'EQ_0dB.wav',
+    //                   'unmasked_-36dB.wav', 'unmasked_-18dB.wav', 'unmasked_-6dB.wav', 'unmasked_0dB.wav'];
 
-    var trial0 = {
-        type: jsPsychAudioButtonResponse,
-        stimulus: 'audio/bounce0.wav',
-        prompt: '<p>Here is a bari sax, trombone, and tuba.</p>',
-        response_allowed_while_playing: false,
-        choices: ['Next'],
-    }
+    // var trial0 = {
+    //     type: jsPsychAudioButtonResponse,
+    //     stimulus: 'audio/bounce0.wav',
+    //     prompt: '<p>Here is a bari sax, trombone, and tuba.</p>',
+    //     response_allowed_while_playing: false,
+    //     choices: ['Next'],
+    // }
 
-    timeline.push(trial0);
+    // timeline.push(trial0);
 
-    var trial1 = {
-        type: jsPsychAudioButtonResponse,
-        stimulus: 'audio/bounce1.wav',
-        prompt: '<p>Here is a trombone and tuba - no bari sax.</p>',
-        response_allowed_while_playing: false,
-        choices: ['Back', 'Next'],
-    }
+    // var trial1 = {
+    //     type: jsPsychAudioButtonResponse,
+    //     stimulus: 'audio/bounce1.wav',
+    //     prompt: '<p>Here is a trombone and tuba - no bari sax.</p>',
+    //     response_allowed_while_playing: false,
+    //     choices: ['Back', 'Next'],
+    // }
 
-    timeline.push(trial1);
+    // timeline.push(trial1);
 
-    var trial4 = {
-        type: jsPsychAudioButtonResponse,
-        stimulus: 'audio/bounce4.wav',
-        prompt: '<p>Here is bari sax and tuba - no trombone.p>',
-        response_allowed_while_playing: false,
-        choices: ['Back', 'Next'],
-    }
+    // var trial4 = {
+    //     type: jsPsychAudioButtonResponse,
+    //     stimulus: 'audio/bounce4.wav',
+    //     prompt: '<p>Here is bari sax and tuba - no trombone.p>',
+    //     response_allowed_while_playing: false,
+    //     choices: ['Back', 'Next'],
+    // }
 
-    timeline.push(trial4);
+    // timeline.push(trial4);
 
-    var trial5 = {
-        type: jsPsychAudioButtonResponse,
-        stimulus: 'audio/bounce5.wav',
-        prompt: '<p>Here is bari sax and trombone - no tuba.</p>',
-        response_allowed_while_playing: false,
-        choices: ['Back', 'Next'],
-    }
+    // var trial5 = {
+    //     type: jsPsychAudioButtonResponse,
+    //     stimulus: 'audio/bounce5.wav',
+    //     prompt: '<p>Here is bari sax and trombone - no tuba.</p>',
+    //     response_allowed_while_playing: false,
+    //     choices: ['Back', 'Next'],
+    // }
 
-    timeline.push(trial5);
+    // timeline.push(trial5);
 
-    var trial2 = {
-        type: jsPsychAudioButtonResponse,
-        stimulus: 'audio/bounce2.wav',
-        prompt: '<p>Here is a bari sax, trombone, and tuba.</p>',
-        response_allowed_while_playing: false,
-        choices: ['Next'],
-    }
+    // var trial2 = {
+    //     type: jsPsychAudioButtonResponse,
+    //     stimulus: 'audio/bounce2.wav',
+    //     prompt: '<p>Here is a bari sax, trombone, and tuba.</p>',
+    //     response_allowed_while_playing: false,
+    //     choices: ['Next'],
+    // }
 
-    timeline.push(trial2);
+    // timeline.push(trial2);
 
-    var trial3 = {
-        type: jsPsychAudioButtonResponse,
-        stimulus: 'audio/bounce3.wav',
-        prompt: '<p>Here is a trombone and tuba - no bari sax.</p>',
-        response_allowed_while_playing: false,
-        choices: ['Next'],
-    }
+    // var trial3 = {
+    //     type: jsPsychAudioButtonResponse,
+    //     stimulus: 'audio/bounce3.wav',
+    //     prompt: '<p>Here is a trombone and tuba - no bari sax.</p>',
+    //     response_allowed_while_playing: false,
+    //     choices: ['Next'],
+    // }
 
-    timeline.push(trial3);
+    // timeline.push(trial3);
 
-    jsPsych.randomization.shuffle(audioFiles);
+    // jsPsych.randomization.shuffle(audioFiles);
 
-    var trial = {
-        type: jsPsychAudioButtonResponse,
-        stimulus: 'audio/' + audioFiles[i],
-        prompt: '<p>Choose one of the buttons after the audio finishes playing.</p>',
-        choices: ['One instrument', 'Two instruments'],
-      };
+    // var trial = {
+    //     type: jsPsychAudioButtonResponse,
+    //     stimulus: 'audio/' + audioFiles[i],
+    //     prompt: '<p>Choose one of the buttons after the audio finishes playing.</p>',
+    //     choices: ['One instrument', 'Two instruments'],
+    //   };
 
-    var trials = [];
+    // var trials = [];
 
-    for (var i = 0; i < audioFiles.length; i++) {
-      var trial = {
-        type: jsPsychAudioButtonResponse,
-        stimulus: 'audio/' + audioFiles[i],
-        prompt: '<p>Choose one of the buttons after the audio finishes playing.</p>',
-        choices: ['One instrument', 'Two instruments'],
-      };
+    // for (var i = 0; i < audioFiles.length; i++) {
+    //   var trial = {
+    //     type: jsPsychAudioButtonResponse,
+    //     stimulus: 'audio/' + audioFiles[i],
+    //     prompt: '<p>Choose one of the buttons after the audio finishes playing.</p>',
+    //     choices: ['One instrument', 'Two instruments'],
+    //   };
 
-      trials.push(trial);
-    }
+    //   trials.push(trial);
+    // }
 
-    var timeline = [welcome].concat(trials);
+    // var timeline = [welcome].concat(trials);
 
-    var end = {
-      type: jsPsychHtmlKeyboardResponse,
-      stimulus: "Thanks for your participation!",
-      choices: " "
-      };
+    // var end = {
+    //   type: jsPsychHtmlKeyboardResponse,
+    //   stimulus: "Thanks for your participation!",
+    //   choices: " "
+    //   };
 
-    timeline.push(end)
+    // timeline.push(end);
 
     jsPsych.run(timeline);
   </script>
