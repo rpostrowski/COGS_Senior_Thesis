@@ -46,7 +46,7 @@ def treat_prepped_folder(input_folder, center_freq):
                 qX = "q0" if q_factor == 1.5 else "q1"
 
                 # Write the processed signal to a new WAV file
-                output_file_name = f"{which_file}_{boost_cut}_{dB}dB_{qX}.wav"
+                output_file_name = f"{which_file}{boost_cut}_{dB}dB_{qX}.wav"
                 output_path = os.path.join(input_folder, output_file_name)
                 wav.write(output_path, sample_rate, output_signal)
 

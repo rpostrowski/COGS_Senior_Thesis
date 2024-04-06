@@ -57,11 +57,8 @@ def sort_files(parent_folder):
     file_list = [file for file in folder_contents if file.endswith(".wav")]
     sorted_folders = os.listdir(os.path.join(parent_folder, "output/"))
 
-    print(sorted_folders)
-
     for folder in sorted_folders:
         folder_path = os.path.join(parent_folder, "output", folder)
-        print(folder_path)
 
         # copy in extraA
         shutil.copy2("audio\set1\extraA.wav", os.path.join(folder_path, "extraA.wav"))
@@ -70,22 +67,31 @@ def sort_files(parent_folder):
         shutil.copy2("audio\set1\extraB.wav", os.path.join(folder_path, "extraB.wav"))
 
         if (folder == "control"):
-            print("control")
+            shutil.copy2("audio\set1\extraA.wav", os.path.join(folder_path, "extraA.wav"))
+            shutil.copy2("audio\set1\extraB.wav", os.path.join(folder_path, "extraB.wav"))
 
         else:
             # extract useful info from folder name
             variables = folder.split("_")
             m1, m2, gain, qval = variables
 
-            # get the right m1
             if (m1 == "m1control"):
-                print("copy m1.wav")
-            elif (m1 == "m1cut"):
-                print(f"{m1}_{gain}_{qval}.wav")
+                shutil.copy2("audio\set1\m1.wav", os.path.join(folder_path, "m1.wav"))
+            else:
+                # get the right m1 string
+                m1_string = f"{m1}_{gain}_{qval}.wav"
+                m1_path = os.path.join(parent_folder, m1_string)
+                shutil.copy2(m1_path, os.path.join(folder_path, m1_string))
 
-            # get the right m2
-            if (m1 == "m1control"):
-                print("copy m2.wav")
+
+            if (m2 == "m2control"):
+                shutil.copy2("audio\set1\m2.wav", os.path.join(folder_path, "m2.wav"))
+            else:
+                # get the right m2
+                m2_string = f"{m2}_{gain}_{qval}.wav"
+                m2_path = os.path.join(parent_folder, m2_string)
+                shutil.copy2(m2_path, os.path.join(folder_path, m2_string))
+
 
 # # Copy and organize files
 # for filename in file_list:
