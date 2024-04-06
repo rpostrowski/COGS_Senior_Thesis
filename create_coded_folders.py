@@ -31,8 +31,9 @@ def create_folders(input_folder):
                 for q_level in q_levels:
                     directory_path = os.path.join(output_folder, f"{m1}_{m2}_{db_level}_{q_level}")
                     os.makedirs(directory_path, exist_ok=True)
-                    
 
+
+# EXAMPLE - $ python3 create_coded_folders.py "audio\set1"
 def main():
     parser = argparse.ArgumentParser()
 

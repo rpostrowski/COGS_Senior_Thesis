@@ -45,7 +45,7 @@ def sort_files(parent_folder):
                 shutil.copy2(m2_path, os.path.join(folder_path, m2_string))
 
 
-# EXAMPLE - sort_files "audio\set1"
+# EXAMPLE - $ python3 organize_files.py "audio\set1"
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('input_folder', type=str, help='Input folder containing WAV files.')
