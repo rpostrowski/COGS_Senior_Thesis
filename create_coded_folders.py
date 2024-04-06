@@ -7,48 +7,31 @@ def create_folders(input_folder):
     output_folder = os.path.join(input_folder, 'output')
     os.makedirs(output_folder, exist_ok=True)
 
+    # Make control folder
     control = os.path.join(output_folder, 'control')
-
-    m1boost_m2control_3dB_q0 = os.path.join(output_folder, 'm1boost_m2control_3dB_q0')
-    m1boost_m2control_7dB_q0 = os.path.join(output_folder, 'm1boost_m2control_7dB_q0')
-    
-    m1cut_m2control_3dB_q0 = os.path.join(output_folder, 'm1cut_m2control_3dB_q0')
-    m1cut_m2control_7dB_q0 = os.path.join(output_folder, 'm1cut_m2control_7dB_q0')
-    
-    m1control_m2boost_3dB_q0 = os.path.join(output_folder, 'm1control_m2boost_3dB_q0')
-    m1control_m2boost_7dB_q1 = os.path.join(output_folder, 'm1control_m2boost_7dB_q1')
-    
-    m1control_m2cut_3dB_q0 = os.path.join(output_folder, 'm1control_m2cut_3dB_q0')
-    m1control_m2cut_7dB_q1 = os.path.join(output_folder, 'm1control_m2cut_7dB_q1')
-    
-    m1boost_m2cut_3dB_q0 = os.path.join(output_folder, 'm1boost_m2cut_3dB_q0')
-    m1boost_m2cut_7dB_q1 = os.path.join(output_folder, 'm1boost_m2cut_7dB_q1')
-    
-    m1cut_m2boost_3dB_q0 = os.path.join(output_folder, 'm1cut_m2boost_3dB_q0')
-    m1cut_m2boost_7dB_q1 = os.path.join(output_folder, 'm1cut_m2boost_7dB_q1')
-
-
     os.makedirs(control, exist_ok=True)
-    
-    os.makedirs(m1boost_m2control_3dB_q0, exist_ok=True)
-    os.makedirs(m1boost_m2control_7dB_q0, exist_ok=True)
-    
-    os.makedirs(m1cut_m2control_3dB_q0, exist_ok=True)
-    os.makedirs(m1cut_m2control_7dB_q0, exist_ok=True)
 
-    os.makedirs(m1control_m2boost_3dB_q0, exist_ok=True)
-    os.makedirs(m1control_m2boost_7dB_q1, exist_ok=True)
-    
-    os.makedirs(m1control_m2cut_3dB_q0, exist_ok=True)
-    os.makedirs(m1control_m2cut_7dB_q1, exist_ok=True)
-    
-    os.makedirs(m1boost_m2cut_3dB_q0, exist_ok=True)
-    os.makedirs(m1boost_m2cut_7dB_q1, exist_ok=True)
+    m1_options = ["m1cut", "m1boost", "m1control"]
+    db_levels = ["3dB", "7dB"]
+    q_levels = ["q0", "q1"]
 
-    os.makedirs(m1cut_m2boost_3dB_q0, exist_ok=True)
-    os.makedirs(m1cut_m2boost_7dB_q1, exist_ok=True)
+    # Loop through each combination and create the directories
+    for m1 in m1_options:
 
+        # Define what the options are for m2
+        if (m1 == "m1cut"):
+            m2_options = ["m2boost", "m2control"]
+        elif (m1 == "m1boost"):
+            m2_options = ["m2cut", "m2control"]
+        elif (m1 == "m1control"):
+            m2_options = ["m2cut", "m2boost"]
 
+        for m2 in m2_options:
+            for db_level in db_levels:
+                for q_level in q_levels:
+                    directory_path = os.path.join(output_folder, f"{m1}_{m2}_{db_level}_{q_level}")
+                    os.makedirs(directory_path, exist_ok=True)
+                    
 
 def main():
     parser = argparse.ArgumentParser()
