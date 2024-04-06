@@ -39,8 +39,14 @@ def treat_prepped_folder(input_folder, center_freq):
                 output_signal = input_signal.copy()
                 eq.process(input_signal, output_signal)
 
+                # Prep the features for file coding
+                which_file = "m1" if filename == "m1.wav" else "m2"
+                boost_cut = "cut" if gain < 0 else "boost"
+                dB = abs(gain)
+                qX = "q0" if q_factor == 1.5 else "q1"
+
                 # Write the processed signal to a new WAV file
-                output_file_name = f"{q_factor}_{gain}dB_{filename}"
+                output_file_name = f"{which_file}_{boost_cut}_{dB}dB_{qX}.wav"
                 output_path = os.path.join(input_folder, output_file_name)
                 wav.write(output_path, sample_rate, output_signal)
 
