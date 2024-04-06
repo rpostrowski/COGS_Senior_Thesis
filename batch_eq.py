@@ -11,7 +11,6 @@ def treat_all():
     treat_prepped_folder("set1", 987) # electric and bass
     treat_prepped_folder("set2", 300) # electric and electric
     
-
 def treat_prepped_folder(input_folder, center_freq):
 
     file_list = os.listdir(input_folder)
@@ -41,7 +40,7 @@ def treat_prepped_folder(input_folder, center_freq):
                 eq.process(input_signal, output_signal)
 
                 # Write the processed signal to a new WAV file
-                output_file_name = f"{center_freq}_{q_factor}_{gain}_{filename}"
+                output_file_name = f"{q_factor}_{gain}dB_{filename}"
                 output_path = os.path.join(input_folder, output_file_name)
                 wav.write(output_path, sample_rate, output_signal)
 
