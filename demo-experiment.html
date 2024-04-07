@@ -13,8 +13,39 @@
   <script>
 
     const jsPsych = initJsPsych();
-
     var timeline = [];
+
+
+// CONDITION ASSIGNMENTS
+    var possible_alignments = ['control',
+                              'm1cut_m2boost_3dB_q0', 'm1cut_m2boost_3dB_q1',
+                              'm1cut_m2boost_7dB_q0', 'm1cut_m2boost_7dB_q1',
+                              'm1cut_m2control_3dB_q0', 'm1cut_m2control_3dB_q1',
+                              'm1cut_m2control_7dB_q0', 'm1cut_m2control_7dB_q1',
+                              'm1boost_m2cut_3dB_q0', 'm1boost_m2cut_3dB_q1',
+                              'm1boost_m2cut_7dB_q0', 'm1boost_m2cut_7dB_q1',
+                              'm1boost_m2control_3dB_q0', 'm1boost_m2control_3dB_q1',
+                              'm1boost_m2control_7dB_q0', 'm1boost_m2control_7dB_q1',
+                              'm1control_m2cut_3dB_q0', 'm1control_m2cut_3dB_q1',
+                              'm1control_m2cut_7dB_q0', 'm1control_m2cut_7dB_q1',
+                              'm1control_m2boost_3dB_q0', 'm1control_m2boost_3dB_q1',
+                              'm1control_m2boost_7dB_q0', 'm1control_m2boost_7dB_q1'];
+
+    // should extra switch??  also be 3 instrument includes extra1, or 50% 3 instr include extra2?
+
+    var assignments = jsPsych.randomization.sampleWithReplacement(possible_alignments, 9)
+
+    var assignment_info_object = {
+        'set0_2inst': assignments[0],
+        'set0_3inst': assignments[1],
+        'set0_4inst': assignments[2],
+        'set1_2inst': assignments[3],
+        'set1_3inst': assignments[4],
+        'set1_4inst': assignments[5],
+        'set2_2inst': assignments[6],
+        'set2_3inst': assignments[7],
+        'set2_4inst': assignments[8],
+      };
 
     var preload = {
       type: jsPsychPreload,
@@ -124,103 +155,16 @@
     
     timeline.push(headphone_eval);
 
-
-
-// DEMO AUDIO TRIALS
-    // var audioFiles = ['EQ_-36dB.wav', 'EQ_-18dB.wav', 'EQ_-6dB.wav', 'EQ_0dB.wav',
-    //                   'unmasked_-36dB.wav', 'unmasked_-18dB.wav', 'unmasked_-6dB.wav', 'unmasked_0dB.wav'];
-
-    // var trial0 = {
-    //     type: jsPsychAudioButtonResponse,
-    //     stimulus: 'audio/bounce0.wav',
-    //     prompt: '<p>Here is a bari sax, trombone, and tuba.</p>',
-    //     response_allowed_while_playing: false,
-    //     choices: ['Next'],
-    // }
-
-    // timeline.push(trial0);
-
-    // var trial1 = {
-    //     type: jsPsychAudioButtonResponse,
-    //     stimulus: 'audio/bounce1.wav',
-    //     prompt: '<p>Here is a trombone and tuba - no bari sax.</p>',
-    //     response_allowed_while_playing: false,
-    //     choices: ['Back', 'Next'],
-    // }
-
-    // timeline.push(trial1);
-
-    // var trial4 = {
-    //     type: jsPsychAudioButtonResponse,
-    //     stimulus: 'audio/bounce4.wav',
-    //     prompt: '<p>Here is bari sax and tuba - no trombone.p>',
-    //     response_allowed_while_playing: false,
-    //     choices: ['Back', 'Next'],
-    // }
-
-    // timeline.push(trial4);
-
-    // var trial5 = {
-    //     type: jsPsychAudioButtonResponse,
-    //     stimulus: 'audio/bounce5.wav',
-    //     prompt: '<p>Here is bari sax and trombone - no tuba.</p>',
-    //     response_allowed_while_playing: false,
-    //     choices: ['Back', 'Next'],
-    // }
-
-    // timeline.push(trial5);
-
-    // var trial2 = {
-    //     type: jsPsychAudioButtonResponse,
-    //     stimulus: 'audio/bounce2.wav',
-    //     prompt: '<p>Here is a bari sax, trombone, and tuba.</p>',
-    //     response_allowed_while_playing: false,
-    //     choices: ['Next'],
-    // }
-
-    // timeline.push(trial2);
-
-    // var trial3 = {
-    //     type: jsPsychAudioButtonResponse,
-    //     stimulus: 'audio/bounce3.wav',
-    //     prompt: '<p>Here is a trombone and tuba - no bari sax.</p>',
-    //     response_allowed_while_playing: false,
-    //     choices: ['Next'],
-    // }
-
-    // timeline.push(trial3);
-
-    // jsPsych.randomization.shuffle(audioFiles);
-
-    // var trial = {
-    //     type: jsPsychAudioButtonResponse,
-    //     stimulus: 'audio/' + audioFiles[i],
-    //     prompt: '<p>Choose one of the buttons after the audio finishes playing.</p>',
-    //     choices: ['One instrument', 'Two instruments'],
-    //   };
-
-    // var trials = [];
-
-    // for (var i = 0; i < audioFiles.length; i++) {
-    //   var trial = {
-    //     type: jsPsychAudioButtonResponse,
-    //     stimulus: 'audio/' + audioFiles[i],
-    //     prompt: '<p>Choose one of the buttons after the audio finishes playing.</p>',
-    //     choices: ['One instrument', 'Two instruments'],
-    //   };
-
-    //   trials.push(trial);
-    // }
-
-    // var timeline = [welcome].concat(trials);
-
-    // var end = {
-    //   type: jsPsychHtmlKeyboardResponse,
-    //   stimulus: "Thanks for your participation!",
-    //   choices: " "
-    //   };
-
-    // timeline.push(end);
+// TRIALS
+  for (var i = 0; i < assignments.length; i++) {
+      var trial = {
+          type: jsPsychHtmlKeyboardResponse,
+          stimulus: assignments[i],
+          choices: " ",
+      };
+      console.log("new")
+      timeline.push(trial);
+  }
 
     jsPsych.run(timeline);
   </script>
