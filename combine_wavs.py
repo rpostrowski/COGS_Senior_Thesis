@@ -39,14 +39,16 @@ def combine_files(parent_folder):
 
 
 # EXAMPLE - $ python3 combine_wavs.py "audio\set1\output"
+# def main():
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument('parent_folder', type=str, help='Input folder containing WAV files.')
+#     args = parser.parse_args()
+#     combine_files(args.parent_folder)
+
 def main():
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument('parent_folder', type=str, help='Input folder containing WAV files.')
-    args = parser.parse_args()
-
-    # Call batch_eq with provided arguments
-    combine_files(args.parent_folder)
+    combine_files("audio\set0\output")
+    combine_files("audio\set1\output")
+    combine_files("audio\set2\output")
 
 if __name__ == "__main__":
     main()

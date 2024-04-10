@@ -10,8 +10,6 @@ def treat_prepped_folder(input_folder, center_freq):
 
     file_list = os.listdir(input_folder)
 
-    print(file_list)
-
     # For both "m1.wav" and "m2.wav"...
     for filename in [filename for filename in file_list if filename.startswith('m')]:
 
@@ -110,9 +108,9 @@ def equalize_folder(input_folder, output_folder, center_freq, q_factor, gain):
     # equalize_folder(args.input_folder, args.output_folder, args.center_freq, args.q_factor, args.gain)
 
 def main():
-    treat_prepped_folder("set0", 202) # bass and kick
-    treat_prepped_folder("set1", 987) # electric and bass
-    treat_prepped_folder("set2", 300) # electric and electric
-    
+    treat_prepped_folder("audio\set0", 202) # bass and kick
+    treat_prepped_folder("audio\set1", 987) # electric and bass
+    treat_prepped_folder("audio\set2", 300) # electric and electric
+
 if __name__ == "__main__":
     main()
