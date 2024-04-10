@@ -99,6 +99,7 @@ def equalize_folder(input_folder, output_folder, center_freq, q_factor, gain):
 # FOR COMMAND LINE USE
 def main():
     parser = argparse.ArgumentParser(description='Apply batch equalization to WAV files in a folder.')
+
     parser.add_argument('input_folder', type=str, help='Input folder containing WAV files.')
     parser.add_argument('center_freq', type=int)
     args = parser.parse_args()

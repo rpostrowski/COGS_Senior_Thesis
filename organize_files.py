@@ -19,8 +19,8 @@ def sort_files(parent_folder):
 
         # Handle control folder
         if (folder == "control"):
-            shutil.copy2("audio\set1\extraA.wav", os.path.join(folder_path, "extraA.wav"))
-            shutil.copy2("audio\set1\extraB.wav", os.path.join(folder_path, "extraB.wav"))
+            shutil.copy2("audio\set1\m1.wav", os.path.join(folder_path, "m1.wav"))
+            shutil.copy2("audio\set1\m2.wav", os.path.join(folder_path, "m2.wav"))
 
         # For all other folders...
         else:
