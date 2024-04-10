@@ -34,17 +34,16 @@ def create_folders(input_folder):
 
 
 # EXAMPLE - $ python3 create_coded_folders.py "audio\set1"
+# def main():
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument('input_folder', type=str, help='Input folder containing WAV files.')
+#     args = parser.parse_args()
+#     create_folders(args.input_folder)
+
 def main():
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument('input_folder', type=str, help='Input folder containing WAV files.')
-
-    # Parse arguments
-    args = parser.parse_args()
-
-    # Call batch_eq with provided arguments
-    create_folders(args.input_folder)
-
+    create_folders("audio\set0")
+    create_folders("audio\set1")
+    create_folders("audio\set2")
 
 if __name__ == "__main__":
     main()

@@ -46,11 +46,16 @@ def sort_files(parent_folder):
 
 
 # EXAMPLE - $ python3 organize_files.py "audio\set1"
+# def main():
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument('input_folder', type=str, help='Input folder containing WAV files.')
+#     args = parser.parse_args()
+#     sort_files(args.input_folder)
+
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('input_folder', type=str, help='Input folder containing WAV files.')
-    args = parser.parse_args()
-    sort_files(args.input_folder)
+    sort_files("audio\set0")
+    sort_files("audio\set1")
+    sort_files("audio\set2")
 
 if __name__ == "__main__":
     main()

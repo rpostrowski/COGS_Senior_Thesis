@@ -5,12 +5,7 @@ import os
 
 # We're expecting to receive a folder with four audio files, named in the following way:
 # ["m1.wav", "m2.wav", "extraA.wav", "extraB.wav"]
-
-def treat_all():
-    treat_prepped_folder("set0", 202) # bass and kick
-    treat_prepped_folder("set1", 987) # electric and bass
-    treat_prepped_folder("set2", 300) # electric and electric
-    
+   
 def treat_prepped_folder(input_folder, center_freq):
 
     file_list = os.listdir(input_folder)
@@ -97,15 +92,15 @@ def equalize_folder(input_folder, output_folder, center_freq, q_factor, gain):
 
 
 # EXAMPLE - $ python3 batch_eq.py "set0" 202
-def main():
-    parser = argparse.ArgumentParser(description='Apply batch equalization to WAV files in a folder.')
+# def main():
+    # parser = argparse.ArgumentParser(description='Apply batch equalization to WAV files in a folder.')
 
-    parser.add_argument('input_folder', type=str, help='Input folder containing WAV files.')
-    parser.add_argument('center_freq', type=int)
-    args = parser.parse_args()
+    # parser.add_argument('input_folder', type=str, help='Input folder containing WAV files.')
+    # parser.add_argument('center_freq', type=int)
+    # args = parser.parse_args()
 
-    # Call batch_eq with provided arguments
-    treat_prepped_folder(args.input_folder, args.center_freq)
+    # # Call batch_eq with provided arguments
+    # treat_prepped_folder(args.input_folder, args.center_freq)
 
     # parser.add_argument('input_folder', type=str, help='Input folder containing WAV files.')
     # parser.add_argument('output_folder', type=str, help='Output folder to save processed WAV files.')
@@ -114,5 +109,10 @@ def main():
     # parser.add_argument('gain', type=int)
     # equalize_folder(args.input_folder, args.output_folder, args.center_freq, args.q_factor, args.gain)
 
+def main():
+    treat_prepped_folder("set0", 202) # bass and kick
+    treat_prepped_folder("set1", 987) # electric and bass
+    treat_prepped_folder("set2", 300) # electric and electric
+    
 if __name__ == "__main__":
     main()
