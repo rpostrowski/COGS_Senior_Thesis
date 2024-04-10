@@ -96,7 +96,7 @@ def equalize_folder(input_folder, output_folder, center_freq, q_factor, gain):
         wav.write(output_path, sample_rate, output_signal)
 
 
-# FOR COMMAND LINE USE
+# EXAMPLE - $ python3 batch_eq.py "set0" 202
 def main():
     parser = argparse.ArgumentParser(description='Apply batch equalization to WAV files in a folder.')
 
