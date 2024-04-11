@@ -23,7 +23,15 @@
   </body>
   <script>
 
-    const jsPsych = initJsPsych({display_element: 'jspsych-target'});
+  const jsPsych = initJsPsych({
+    display_element: 'jspsych-target',
+    on_finish: function() {
+      // Display data
+      jsPsych.data.displayData();
+    }
+  });
+
+
     var timeline = [];
 
   // CONDITION ASSIGNMENTS
@@ -58,6 +66,7 @@
       var eq_assignment = eq_assignments[i];
       var instr_assignment = instr_assignments[i];
       var filePath = folder + "/" + eq_assignment + "/" + instr_assignment + ".wav";
+      var num_instr = (possible_instruments.indexOf(instr_assignment) + 2)
 
       if (eq_assignment != "control"){
         variables = eq_assignment.split("_")
@@ -76,6 +85,7 @@
       stimulus: filePath,
       eq_assignment: eq_assignment,
       instr_assignment: instr_assignment,
+      num_instr: num_instr,
       set: i % 3,
       m1: m1,
       m2: m2,
@@ -179,8 +189,8 @@
     var headphone_check = {
       timeline: [test],
       timeline_variables: headphone_audio,
-      // randomize_order: false,
-      randomize_order: true,
+      randomize_order: false,
+      // randomize_order: true,
     };
 
     timeline.push(headphone_check);
@@ -191,16 +201,16 @@
 
         var trials = jsPsych.data.get().filter({task: 'headphone_check'});
         var correct_trials = trials.filter({correct: true});
-        if (correct_trials.count() > 5)
-          return `<p>You passed the headphone check.</p>`
+        if (correct_trials.count() > 4)
+          return `<p>Great!  You passed the headphone check.</p>`
         else
         return"<p>You didn't pass the headphone check.</p>";
       },
       on_finish: function(){
         var trials = jsPsych.data.get().filter({task: 'headphone_check'});
         var correct_trials = trials.filter({correct: true});
-        if (correct_trials.count() < 6)
-          jsPsych.endExperiment('Because you failed the headphone check, you have been disqualified from participating in this experiment.');
+        if (correct_trials.count() < 5)
+          jsPsych.endExperiment('Because you failed the headphone check, you have been disqualified from participating in this experiment.<br><br>You may now close this window.');
         }
     };
     
@@ -208,14 +218,36 @@
 
 // TRIALS
 
+  var experiment_instr = {
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: `Now, it's time for the experiment.<br><br>
+                    In each of the following trials, you will hear an audio track that consists of multiple instruments.<br><br>
+                    <b/>Your task is to guess how many instruments are playing.</b><br><br>
+                    Test sounds will only play once!<br><br>
+                    Press the space bar to continue.`,
+        choices: " ",
+      }
+
+    timeline.push(experiment_instr);
+
   var trial = {
       type: jsPsychAudioButtonResponse,
       stimulus: jsPsych.timelineVariable('stimulus'),
       prompt: "<br>How many instruments are playing?",
       choices: ['One', 'Two', 'Three', 'Four', 'Five'],
-      response_allowed_while_playing: false,
+      // response_allowed_while_playing: false,
+      response_allowed_while_playing: true,
       data: {
+        correct_response: jsPsych.timelineVariable('num_instr'),
         task: 'trials',
+        stimulus: jsPsych.timelineVariable('stimulus'),
+        eq_assignment: jsPsych.timelineVariable('eq_assignment'),
+        instr_assignment: jsPsych.timelineVariable('instr_assignment'),
+        set: jsPsych.timelineVariable('set'),
+        m1: jsPsych.timelineVariable('m1'),
+        m2: jsPsych.timelineVariable('m2'),
+        gain: jsPsych.timelineVariable('gain'),
+        qval: jsPsych.timelineVariable('qval'),
       },
     }
 
@@ -227,6 +259,6 @@
 
   timeline.push(trials);
 
-    jsPsych.run(timeline);
+  jsPsych.run(timeline);
   </script>
 </html>
