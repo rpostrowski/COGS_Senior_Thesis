@@ -1,21 +1,32 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Senior Thesis Demo</title>
+    <title>Rachel's Senior Thesis</title>
     <script src="jspsych/jspsych.js"></script>
     <script src="jspsych/plugin-preload.js"></script>
     <script src="jspsych/plugin-html-keyboard-response.js"></script>
     <script src="jspsych/plugin-audio-button-response.js"></script>
+    <link rel="stylesheet" href="style.css" type="text/css">
     <link href="jspsych/jspsych.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" type="image/png" href="VC_logo.png"/>
+
     
   </head>
-  <body></body>
+  <body>
+    <div id="header">
+      <div id="logo-wrapper">
+        <img src="VC_logo.png" alt="Vassar Logo" id="vclogo">
+        <h3 id="logotext">Vassar College Cognitive Science</h3>
+      </div>
+    </div>
+    <div id="jspsych-target"></div>
+  </body>
   <script>
 
-    const jsPsych = initJsPsych();
+    const jsPsych = initJsPsych({display_element: 'jspsych-target'});
     var timeline = [];
 
-// CONDITION ASSIGNMENTS
+  // CONDITION ASSIGNMENTS
     var possible_alignments = ['control',
                               'm1cut_m2boost_3dB_q0', 'm1cut_m2boost_3dB_q1',
                               'm1cut_m2boost_7dB_q0', 'm1cut_m2boost_7dB_q1',
@@ -81,7 +92,8 @@
 
     var welcome = {
       type: jsPsychHtmlKeyboardResponse, // interaction necessary to allow Chrome to play audio
-      stimulus: "Welcome to the experiment!<br><br>Please note that headphones are required for this experiment.  If you haven't done so already, please put them on.<br><br>Then, press the space bar to begin.",
+      stimulus: `Welcome to the experiment!<br><br><b/>Please note that headphones are required for this experiment.
+                If you haven't done so already, please put them on.</b><br><br>Then, press the space bar to begin.`,
       choices: " ",
       post_trial_gap: 500,
       on_finish: console.log("2,3,1,1,2,3")
@@ -93,8 +105,8 @@
     var calibration_tone = {
       type: jsPsychAudioButtonResponse,
       stimulus: "headphone_check_files/noise_calib_stim.wav",
-      prompt: "<br>Please adjust your volume so that the tone is playing at a comfortable loudness.",
-      choices: ["Replay", "Continue"],
+      prompt: "<br>🔈  🔉  🔊<br><br>Please adjust your volume so that the tone is playing at a comfortable loudness.",
+      choices: ["Replay tone", "Volume is good!"],
       response_allowed_while_playing: false,
       on_finish: function(data){
         console.log(data.response)
@@ -108,7 +120,7 @@
 
     var ok_enough = {
       type: jsPsychHtmlKeyboardResponse,
-      stimulus: "That's enough.  Press the space bar to continue.",
+      stimulus: "Ok, that's enough!  Press the space bar to continue.",
       choices: " ",
     }
 
@@ -118,10 +130,19 @@
 
     timeline.push(volume_calibration);
 
+    var headphones_intro = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: `Great!  Now, we'll go through a quick exercise to make sure you're wearing headphones.<br><br>
+                Press the space bar to continue.`,
+      choices: " ",
+    }
+
+    timeline.push(headphones_intro);
+
     var headphones_instr = {
       type: jsPsychHtmlKeyboardResponse,
-      stimulus: `When you hit Play, you will hear three sounds separated by silences.<br><br>
-                  Simply judge WHICH SOUND WAS SOFTEST (quietest) -- 1, 2, or 3?<br><br>
+      stimulus: `In each of the following trials, you will hear three sounds separated by silence.<br><br>
+                  <b/>Simply judge which sound was the SOFTEST - 1, 2, or 3.</b><br><br>
                   Test sounds will only play once!<br><br>
                   Press the space bar to continue.`,
       choices: " ",
@@ -141,18 +162,15 @@
     var test = {
       type: jsPsychAudioButtonResponse,
       stimulus: jsPsych.timelineVariable('stimulus'),
-      prompt: "<br>Which was the softest?",
+      prompt: "<br>Which tone was the softest?",
       choices: ['First', 'Second', 'Third'],
-      response_allowed_while_playing: false,
+      // response_allowed_while_playing: false,
+      response_allowed_while_playing: true,
       data: {
         task: 'headphone_check',
         correct_response: jsPsych.timelineVariable('correct_response')
       },
-      on_start: function(data){
-        // console.log(jsPsych.timelineVariable('correct_response'))
-      },
       on_finish: function(data){
-        // console.log(data.correct_response)
         data.correct = (data.response === data.correct_response);
         console.log(data.correct);
       }
@@ -161,8 +179,8 @@
     var headphone_check = {
       timeline: [test],
       timeline_variables: headphone_audio,
-      randomize_order: false,
-      // randomize_order: true,
+      // randomize_order: false,
+      randomize_order: true,
     };
 
     timeline.push(headphone_check);
@@ -176,8 +194,14 @@
         if (correct_trials.count() > 5)
           return `<p>You passed the headphone check.</p>`
         else
-          return `<p>You didn't pass the headphone check.</p>`
-      }
+        return"<p>You didn't pass the headphone check.</p>";
+      },
+      on_finish: function(){
+        var trials = jsPsych.data.get().filter({task: 'headphone_check'});
+        var correct_trials = trials.filter({correct: true});
+        if (correct_trials.count() < 6)
+          jsPsych.endExperiment('Because you failed the headphone check, you have been disqualified from participating in this experiment.');
+        }
     };
     
     timeline.push(headphone_eval);
