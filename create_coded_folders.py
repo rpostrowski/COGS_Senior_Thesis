@@ -38,10 +38,8 @@ def create_folders(input_folder):
 #     args = parser.parse_args()
 #     create_folders(args.input_folder)
 
-def main():
-    create_folders("audio\set0")
-    create_folders("audio\set1")
-    create_folders("audio\set2")
+def main(folder):
+    create_folders(folder)
 
 if __name__ == "__main__":
     main()

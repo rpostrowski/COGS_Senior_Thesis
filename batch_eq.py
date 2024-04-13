@@ -2,9 +2,15 @@ import argparse
 import yodel.filter
 import scipy.io.wavfile as wav
 import os
+from pydub import AudioSegment
 
 # We're expecting to receive a folder with four audio files, named in the following way:
 # ["m1.wav", "m2.wav", "extraA.wav", "extraB.wav"]
+
+def match_target_amplitude(sound, target_dBFS):
+    change_in_dBFS = target_dBFS - sound.dBFS
+    print(sound.dBFS)
+    return sound.apply_gain(change_in_dBFS)
    
 def treat_prepped_folder(input_folder, m1_freq, m2_freq, q_factor):
 
@@ -12,6 +18,9 @@ def treat_prepped_folder(input_folder, m1_freq, m2_freq, q_factor):
 
     # For both "m1.wav" and "m2.wav"...
     for filename in [filename for filename in file_list if filename.startswith('m')]:
+
+        segment = AudioSegment.from_file(os.path.join(input_folder, filename))
+        pre_eq_dB = segment.dBFS
 
         sample_rate, input_signal = wav.read(os.path.join(input_folder, filename))
 
@@ -41,7 +50,11 @@ def treat_prepped_folder(input_folder, m1_freq, m2_freq, q_factor):
             output_path = os.path.join(input_folder, output_file_name)
             wav.write(output_path, sample_rate, output_signal)
 
+            new_segment = AudioSegment.from_file(output_path)
+            new_segment_normalized = match_target_amplitude(new_segment, pre_eq_dB)
+            new_segment_normalized.export(output_path, format="wav")
 
+# NOT USED
 def equalize_file(input_path, output_path, center_freq, q_factor, gain):
 
     sample_rate, input_signal = wav.read(input_path)
@@ -61,6 +74,7 @@ def equalize_file(input_path, output_path, center_freq, q_factor, gain):
     output_path = "april4new.wav"
     wav.write(output_path, sample_rate, output_signal)
 
+# NOT USED
 def equalize_folder(input_folder, output_folder, center_freq, q_factor, gain):
 
     file_list = os.listdir(input_folder)
