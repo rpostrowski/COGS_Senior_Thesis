@@ -29,13 +29,13 @@ def sort_files(parent_folder):
         else:
             # Extract useful info from folder name
             variables = folder.split("_")
-            m1, m2, gain, center_freq = variables
+            m1, m2, gain = variables
 
             # Copy in the correct version of the m1 file
             if (m1 == "m1control"):
                 shutil.copy2(os.path.join(parent_folder,"m1.wav"), os.path.join(folder_path, "m1.wav"))
             else:
-                m1_string = f"{m1}_{center_freq}_{gain}.wav"
+                m1_string = f"{m1}_{gain}.wav"
                 m1_path = os.path.join(parent_folder, m1_string)
                 shutil.copy2(m1_path, os.path.join(folder_path, m1_string))
 
@@ -43,7 +43,7 @@ def sort_files(parent_folder):
             if (m2 == "m2control"):
                 shutil.copy2(os.path.join(parent_folder,"m2.wav"), os.path.join(folder_path, "m2.wav"))
             else:
-                m2_string = f"{m2}_{center_freq}_{gain}.wav"
+                m2_string = f"{m2}_{gain}.wav"
                 m2_path = os.path.join(parent_folder, m2_string)
                 shutil.copy2(m2_path, os.path.join(folder_path, m2_string))
 

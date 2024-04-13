@@ -46,46 +46,42 @@
     });
 
 
-    const condition = 6; // = await jsPsychPipe.getCondition(experiment_id)
+    const condition = 3; // = await jsPsychPipe.getCondition(experiment_id)
 
     var timeline = [];
 
   // CONDITION ASSIGNMENTS
     var possible_alignments = ['control',
-                              'm1cut_m2boost_3dB_q0', 'm1cut_m2boost_3dB_q1',
-                              'm1cut_m2boost_7dB_q0', 'm1cut_m2boost_7dB_q1',
-                              'm1cut_m2control_3dB_q0', 'm1cut_m2control_3dB_q1',
-                              'm1cut_m2control_7dB_q0', 'm1cut_m2control_7dB_q1',
-                              'm1boost_m2cut_3dB_q0', 'm1boost_m2cut_3dB_q1',
-                              'm1boost_m2cut_7dB_q0', 'm1boost_m2cut_7dB_q1',
-                              'm1boost_m2control_3dB_q0', 'm1boost_m2control_3dB_q1',
-                              'm1boost_m2control_7dB_q0', 'm1boost_m2control_7dB_q1',
-                              'm1control_m2cut_3dB_q0', 'm1control_m2cut_3dB_q1',
-                              'm1control_m2cut_7dB_q0', 'm1control_m2cut_7dB_q1',
-                              'm1control_m2boost_3dB_q0', 'm1control_m2boost_3dB_q1',
-                              'm1control_m2boost_7dB_q0', 'm1control_m2boost_7dB_q1'];
+                              'm1boost_m2control_3dB', 'm1boost_m2control_7dB',
+                              'm1boost_m2cut_3dB', 'm1boost_m2cut_7dB',
+                              'm1control_m2boost_3dB', 'm1control_m2boost_7dB',
+                              'm1control_m2cut_3dB', 'm1control_m2cut_7dB',
+                              'm1cut_m2boost_3dB', 'm1cut_m2boost_7dB',
+                              'm1cut_m2control_3dB', 'm1cut_m2control_7dB'];
+                            
+                          
+    var possible_instruments = ["2_two_instr_norm", "2_two_instr_norm", "2_two_instr_norm",
+                                "3_one_extra_norm", "3_one_extra_norm", "3_one_extra_norm",
+                                "4_two_extra_norm", "4_three_extra_norm", "4_two_extra_norm",
+                                "5_three_extra_norm", "5_three_extra_norm", "5_three_extra_norm"]
 
-    var possible_instruments = ["two_instr_norm", "one_extra_norm", "two_extra_norm"]
-
-    // var possible_instruments = ["two_instr_norm", "two_instr_norm", "two_instr_norm",
-    //                             "one_extra_norm", "one_extra_norm", "one_extra_norm",
-    //                             "two_extra_norm", "two_extra_norm", "two_extra_norm"]
-
-
-    // should extra switch??  also be 3 instrument includes extra1, or 50% 3 instr include extra2?
-    // should be equal 3, 3, 3 of 2 instr, 3 instr, and 4 instr?
-
-    var eq_assignments = jsPsych.randomization.sampleWithReplacement(possible_alignments, 9)
-    var instr_assignments = jsPsych.randomization.sampleWithReplacement(possible_instruments, 9)
+    var eq_assignments = jsPsych.randomization.sampleWithReplacement(possible_alignments, 12)
+    var song_order_options = [[0,1,2],[0,2,1],[1,2,0],[1,0,2],[2,1,0],[2,0,1]]
 
     folders = ["audio/set0/output", "audio/set1/output", "audio/set2/output"]
 
+    var song_order = [folders[song_order_options[condition][0]],
+                      folders[song_order_options[condition][1]],
+                      folders[song_order_options[condition][2]]]
+
+    console.log(song_order);
+
     var possible_wavs = [];
 
-    for (var i = 0; i < 9; i++) {
-      var folder = folders[i % 3];
+    for (var i = 0; i < 12; i++) {
+      var folder = song_order[i % 3];
       var eq_assignment = eq_assignments[i];
-      var instr_assignment = instr_assignments[i];
+      var instr_assignment = possible_instruments[i];
       var filePath = folder + "/" + eq_assignment + "/" + instr_assignment + ".wav";
       var num_instr = (possible_instruments.indexOf(instr_assignment) + 2)
       var correct_button = (possible_instruments.indexOf(instr_assignment) + 1)
@@ -95,12 +91,12 @@
         var m1 = variables[0];
         var m2 = variables[1];
         var gain = variables[2];
-        var qval = variables[3];
+        var freq = variables[3];
       } else {
         var m1 = "control";
         var m2 = "control";
         var gain = "control";
-        var qval = "control";
+        var freq = "control";
       }
 
       possible_wavs.push({
@@ -109,11 +105,11 @@
       instr_assignment: instr_assignment,
       num_instr: num_instr,
       correct_button: correct_button,
-      set: i % 3,
+      song: song_order_options[condition][i % 3],
+      folder: folder,
       m1: m1,
       m2: m2,
-      gain: gain,
-      qval: qval });
+      gain: gain});
     }
     
     console.log(possible_wavs)
@@ -137,7 +133,7 @@
 // HEADPHONE CHECK
     var calibration_tone = {
       type: jsPsychAudioButtonResponse,
-      stimulus: "headphone_check_files/noise_calib_stim.wav",
+      stimulus: "headphone_check_files/norm_noise_calib_stim.wav",
       prompt: "<br>🔈  🔉  🔊<br><br>Please adjust your volume so that the tone is playing at a comfortable loudness.",
       choices: ["Replay tone", "Volume is good!"],
       response_allowed_while_playing: false,
@@ -257,7 +253,7 @@
       type: jsPsychAudioButtonResponse,
       stimulus: jsPsych.timelineVariable('stimulus'),
       prompt: "<br>How many instruments are playing?",
-      choices: ['One', 'Two', 'Three', 'Four', 'Five'],
+      choices: ['One', 'Two', 'Three', 'Four', 'Five', 'Six'],
       // response_allowed_while_playing: false,
       response_allowed_while_playing: true,
       data: {
@@ -267,18 +263,17 @@
         stimulus: jsPsych.timelineVariable('stimulus'),
         eq_assignment: jsPsych.timelineVariable('eq_assignment'),
         instr_assignment: jsPsych.timelineVariable('instr_assignment'),
-        set: jsPsych.timelineVariable('set'),
+        song: jsPsych.timelineVariable('song'),
         m1: jsPsych.timelineVariable('m1'),
         m2: jsPsych.timelineVariable('m2'),
-        gain: jsPsych.timelineVariable('gain'),
-        qval: jsPsych.timelineVariable('qval'),
+        gain: jsPsych.timelineVariable('gain')
       },
     }
 
   var trials = {
     timeline: [trial],
     timeline_variables: possible_wavs,
-    randomize_order: true,
+    randomize_order: false,
   };
 
   timeline.push(trials);

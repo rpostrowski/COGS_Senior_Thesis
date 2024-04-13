@@ -34,11 +34,10 @@ def treat_prepped_folder(input_folder, m1_freq, m2_freq, q_factor):
             # Prep the features for file coding
             which_file = "m1" if filename == "m1.wav" else "m2"
             boost_cut = "cut" if gain < 0 else "boost"
-            center_freq = m1_freq if (which_file == "m1" and boost_cut == "boost") or (which_file == "m2" and boost_cut == "cut") else m2_freq
             dB = abs(gain)
 
             # Write the processed signal to a new WAV file
-            output_file_name = f"{which_file}{boost_cut}_{center_freq}_{dB}dB.wav"
+            output_file_name = f"{which_file}{boost_cut}_{dB}dB.wav"
             output_path = os.path.join(input_folder, output_file_name)
             wav.write(output_path, sample_rate, output_signal)
 

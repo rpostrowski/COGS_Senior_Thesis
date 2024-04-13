@@ -2,6 +2,7 @@ import batch_eq
 import combine_wavs
 import create_coded_folders
 import organize_files
+import normalize_headphone_check
 
 def main():
     print("Starting: batch_eq")
