@@ -60,13 +60,13 @@
                               'm1cut_m2control_3dB', 'm1cut_m2control_7dB'];
                             
                           
-    var possible_instruments = ["2_two_instr_norm", "2_two_instr_norm", "2_two_instr_norm",
-                                "3_one_extra_norm", "3_one_extra_norm", "3_one_extra_norm",
-                                "4_two_extra_norm", "4_three_extra_norm", "4_two_extra_norm",
-                                "5_three_extra_norm", "5_three_extra_norm", "5_three_extra_norm"]
+    var possible_instruments = ["2_two_instr_norm", "3_one_extra_norm", "4_two_extra_norm", "5_three_extra_norm"]
 
     var eq_assignments = jsPsych.randomization.sampleWithReplacement(possible_alignments, 12)
     var song_order_options = [[0,1,2],[0,2,1],[1,2,0],[1,0,2],[2,1,0],[2,0,1]]
+    var instr_order = [jsPsych.randomization.sampleWithoutReplacement(possible_instruments, 4),
+                      jsPsych.randomization.sampleWithoutReplacement(possible_instruments, 4),
+                      jsPsych.randomization.sampleWithoutReplacement(possible_instruments, 4)]
 
     folders = ["audio/set0/output", "audio/set1/output", "audio/set2/output"]
 
@@ -75,16 +75,17 @@
                       folders[song_order_options[condition][2]]]
 
     console.log(song_order);
+    console.log(instr_order);
 
     var possible_wavs = [];
 
     for (var i = 0; i < 12; i++) {
       var folder = song_order[i % 3];
       var eq_assignment = eq_assignments[i];
-      var instr_assignment = possible_instruments[i];
+      var instr_assignment = instr_order[i % 3][Math.floor(i / 3)];
       var filePath = folder + "/" + eq_assignment + "/" + instr_assignment + ".wav";
-      var num_instr = (possible_instruments.indexOf(instr_assignment) + 2)
-      var correct_button = (possible_instruments.indexOf(instr_assignment) + 1)
+      var num_instr = (possible_instruments.indexOf(instr_assignment) + 2);
+      var correct_button = (possible_instruments.indexOf(instr_assignment) + 1);
 
       if (eq_assignment != "control"){
         variables = eq_assignment.split("_")
@@ -121,8 +122,8 @@
 
     var welcome = {
       type: jsPsychHtmlKeyboardResponse, // interaction necessary to allow Chrome to play audio
-      stimulus: `Welcome to the experiment!<br><br><b/>Please note that headphones are required for this experiment.
-                If you haven't done so already, please put them on.</b><br><br>Then, press the space bar to begin.`,
+      stimulus: `Welcome to the experiment!<br><br><b/>Please note that headphones are required for this experiment, and that background noise will make the task difficult.</b>
+                <br>If you haven't done so already, please put on headphones and move to a quiet environment.<br><br>Then, press the space bar to begin.`,
       choices: " ",
       post_trial_gap: 500,
       on_finish: console.log("2,3,1,1,2,3")
@@ -131,10 +132,21 @@
     timeline.push(welcome);
 
 // HEADPHONE CHECK
+
+var headphones_intro = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: `First, we'll go through a quick exercise to make sure you're wearing headphones.<br><br>
+                Press the space bar to continue.`,
+      choices: " ",
+    }
+
+    timeline.push(headphones_intro);
+
+
     var calibration_tone = {
       type: jsPsychAudioButtonResponse,
       stimulus: "headphone_check_files/norm_noise_calib_stim.wav",
-      prompt: "<br>🔈  🔉  🔊<br><br>Please adjust your volume so that the tone is playing at a comfortable loudness.",
+      prompt: "<br>🔈  🔉  🔊<br><br>Please adjust your volume so that the tone is playing at a comfortable volume.",
       choices: ["Replay tone", "Volume is good!"],
       response_allowed_while_playing: false,
       on_finish: function(data){
@@ -159,20 +171,11 @@
 
     timeline.push(volume_calibration);
 
-    var headphones_intro = {
-      type: jsPsychHtmlKeyboardResponse,
-      stimulus: `Great!  Now, we'll go through a quick exercise to make sure you're wearing headphones.<br><br>
-                Press the space bar to continue.`,
-      choices: " ",
-    }
-
-    timeline.push(headphones_intro);
-
     var headphones_instr = {
       type: jsPsychHtmlKeyboardResponse,
       stimulus: `In each of the following trials, you will hear three sounds separated by silence.<br><br>
-                  <b/>Simply judge which sound was the SOFTEST - 1, 2, or 3.</b><br><br>
-                  Test sounds will only play once!<br><br>
+                  <b/>Your task is to judge which sound was the SOFTEST - 1, 2, or 3.</b><br><br>
+                  Please note that test sounds will only play once.<br><br>
                   Press the space bar to continue.`,
       choices: " ",
     }
