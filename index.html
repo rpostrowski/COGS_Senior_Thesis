@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="style.css" type="text/css">
     <link href="jspsych/jspsych.css" rel="stylesheet" type="text/css" />
     <link rel="shortcut icon" type="image/png" href="VC_logo.png"/>
+    <script src="https://unpkg.com/@jspsych-contrib/plugin-pipe@0.3"></script>
   </head>
   <body>
     <div id="header">
@@ -21,14 +22,31 @@
   </body>
   <script>
 
-  const jsPsych = initJsPsych({
-    display_element: 'jspsych-target',
-    on_finish: function() {
-      // Display data
-      jsPsych.data.displayData();
-    }
-  });
+    const jsPsych = initJsPsych({
+      display_element: 'jspsych-target',
+      on_finish: function() {
+        // Display data
+        jsPsych.data.displayData();
+        window.location = "https://app.prolific.co/submissions/complete?cc=C1AW14RU";
+      }
+    });
 
+    // Capture info from Prolific
+    var subject_id = jsPsych.data.getURLVariable('PROLIFIC_PID');
+    var study_id = jsPsych.data.getURLVariable('STUDY_ID');
+    var session_id = jsPsych.data.getURLVariable('SESSION_ID');
+
+    // DataPipe info
+    const filename = `${subject_id}.csv`;
+
+    jsPsych.data.addProperties({
+      subject_id: subject_id,
+      study_id: study_id,
+      session_id: session_id
+    });
+
+
+    const condition = 6; // = await jsPsychPipe.getCondition(experiment_id)
 
     var timeline = [];
 
@@ -58,7 +76,7 @@
     // should be equal 3, 3, 3 of 2 instr, 3 instr, and 4 instr?
 
     var eq_assignments = jsPsych.randomization.sampleWithReplacement(possible_alignments, 9)
-    var instr_assignments = jsPsych.randomization.sampleWithoutReplacement(possible_instruments, 9)
+    var instr_assignments = jsPsych.randomization.sampleWithReplacement(possible_instruments, 9)
 
     folders = ["audio/set0/output", "audio/set1/output", "audio/set2/output"]
 
@@ -166,12 +184,12 @@
     timeline.push(headphones_instr);
 
     var headphone_audio = [
-      { stimulus: "headphone_check_files/antiphase_HC_ISO.wav", correct_response: 1},
-      { stimulus: "headphone_check_files/antiphase_HC_IOS.wav", correct_response: 2},
-      { stimulus: "headphone_check_files/antiphase_HC_SOI.wav", correct_response: 0},
-      { stimulus: "headphone_check_files/antiphase_HC_SIO.wav", correct_response: 0},
-      { stimulus: "headphone_check_files/antiphase_HC_OSI.wav", correct_response: 1},
-      { stimulus: "headphone_check_files/antiphase_HC_OIS.wav", correct_response: 2}
+      { stimulus: "headphone_check_files/norm_antiphase_HC_ISO.wav", correct_response: 1},
+      { stimulus: "headphone_check_files/norm_antiphase_HC_IOS.wav", correct_response: 2},
+      { stimulus: "headphone_check_files/norm_antiphase_HC_SOI.wav", correct_response: 0},
+      { stimulus: "headphone_check_files/norm_antiphase_HC_SIO.wav", correct_response: 0},
+      { stimulus: "headphone_check_files/norm_antiphase_HC_OSI.wav", correct_response: 1},
+      { stimulus: "headphone_check_files/norm_antiphase_HC_OIS.wav", correct_response: 2}
     ];
 
     var test = {
@@ -264,6 +282,16 @@
   };
 
   timeline.push(trials);
+
+  const save_data = {
+      type: jsPsychPipe,
+      action: "save",
+      experiment_id: "REPLACE",
+      filename: filename,
+      data_string: ()=>jsPsych.data.get().csv()
+    };
+
+    timeline.push(save_data);
 
   jsPsych.run(timeline);
   </script>

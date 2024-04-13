@@ -20,5 +20,10 @@ def main():
     combine_wavs.main()
     print("Finished: combine_wavs")
 
+    print("Starting: normalizing headphone check files")
+    normalize_headphone_check.main()
+    print("Finished: normalizing headphone check files")
+    
+
 if __name__ == "__main__":
     main()

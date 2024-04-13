@@ -2,7 +2,6 @@
 
 import os
 from pydub import AudioSegment
-import os
 import argparse
 
 def match_target_amplitude(sound, target_dBFS):
