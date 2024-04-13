@@ -6,7 +6,7 @@ import os
 # We're expecting to receive a folder with four audio files, named in the following way:
 # ["m1.wav", "m2.wav", "extraA.wav", "extraB.wav"]
    
-def treat_prepped_folder(input_folder, center_freq):
+def treat_prepped_folder(input_folder, m1_freq, m2_freq, q_factor):
 
     file_list = os.listdir(input_folder)
 
@@ -15,33 +15,32 @@ def treat_prepped_folder(input_folder, center_freq):
 
         sample_rate, input_signal = wav.read(os.path.join(input_folder, filename))
 
-        # For the two q_factor options...
-        for q_factor in [1.5, 4]:
+        center_freq = m1_freq if filename == "m1.wav" else m2_freq
 
-            # For the four gain options...
-            for gain in [-7, -3, 3, 7]:
-                
-                # Create an instance of the custom equalizer
-                num_bands = 1
-                eq = yodel.filter.ParametricEQ(sample_rate, num_bands)
+        # For the four gain options...
+        for gain in [-7, -3, 3, 7]:
+            
+            # Create an instance of the custom equalizer
+            num_bands = 1
+            eq = yodel.filter.ParametricEQ(sample_rate, num_bands)
 
-                # Set parameters for the band
-                eq.set_band(0, center_freq, q_factor, gain)
+            # Set parameters for the band
+            eq.set_band(0, center_freq, 1.5, gain)
 
-                # Process the input signal
-                output_signal = input_signal.copy()
-                eq.process(input_signal, output_signal)
+            # Process the input signal
+            output_signal = input_signal.copy()
+            eq.process(input_signal, output_signal)
 
-                # Prep the features for file coding
-                which_file = "m1" if filename == "m1.wav" else "m2"
-                boost_cut = "cut" if gain < 0 else "boost"
-                dB = abs(gain)
-                qX = "q0" if q_factor == 1.5 else "q1"
+            # Prep the features for file coding
+            which_file = "m1" if filename == "m1.wav" else "m2"
+            boost_cut = "cut" if gain < 0 else "boost"
+            center_freq = m1_freq if (which_file == "m1" and boost_cut == "boost") or (which_file == "m2" and boost_cut == "cut") else m2_freq
+            dB = abs(gain)
 
-                # Write the processed signal to a new WAV file
-                output_file_name = f"{which_file}{boost_cut}_{dB}dB_{qX}.wav"
-                output_path = os.path.join(input_folder, output_file_name)
-                wav.write(output_path, sample_rate, output_signal)
+            # Write the processed signal to a new WAV file
+            output_file_name = f"{which_file}{boost_cut}_{center_freq}_{dB}dB.wav"
+            output_path = os.path.join(input_folder, output_file_name)
+            wav.write(output_path, sample_rate, output_signal)
 
 
 def equalize_file(input_path, output_path, center_freq, q_factor, gain):
@@ -108,9 +107,9 @@ def equalize_folder(input_folder, output_folder, center_freq, q_factor, gain):
     # equalize_folder(args.input_folder, args.output_folder, args.center_freq, args.q_factor, args.gain)
 
 def main():
-    treat_prepped_folder("audio\set0", 202) # bass and kick
-    treat_prepped_folder("audio\set1", 987) # electric and bass
-    treat_prepped_folder("audio\set2", 300) # electric and electric
+    treat_prepped_folder("audio\set0", 100, 200, 1.5) # bass and kick
+    treat_prepped_folder("audio\set1", 300, 400, 1.5) # electric and bass
+    treat_prepped_folder("audio\set2", 500, 600, 1.5) # electric and electric
 
 if __name__ == "__main__":
     main()

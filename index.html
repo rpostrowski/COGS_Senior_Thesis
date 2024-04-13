@@ -9,8 +9,6 @@
     <link rel="stylesheet" href="style.css" type="text/css">
     <link href="jspsych/jspsych.css" rel="stylesheet" type="text/css" />
     <link rel="shortcut icon" type="image/png" href="VC_logo.png"/>
-
-    
   </head>
   <body>
     <div id="header">
@@ -51,11 +49,16 @@
 
     var possible_instruments = ["two_instr_norm", "one_extra_norm", "two_extra_norm"]
 
+    // var possible_instruments = ["two_instr_norm", "two_instr_norm", "two_instr_norm",
+    //                             "one_extra_norm", "one_extra_norm", "one_extra_norm",
+    //                             "two_extra_norm", "two_extra_norm", "two_extra_norm"]
+
+
     // should extra switch??  also be 3 instrument includes extra1, or 50% 3 instr include extra2?
     // should be equal 3, 3, 3 of 2 instr, 3 instr, and 4 instr?
 
     var eq_assignments = jsPsych.randomization.sampleWithReplacement(possible_alignments, 9)
-    var instr_assignments = jsPsych.randomization.sampleWithReplacement(possible_instruments, 9)
+    var instr_assignments = jsPsych.randomization.sampleWithoutReplacement(possible_instruments, 9)
 
     folders = ["audio/set0/output", "audio/set1/output", "audio/set2/output"]
 
@@ -67,6 +70,7 @@
       var instr_assignment = instr_assignments[i];
       var filePath = folder + "/" + eq_assignment + "/" + instr_assignment + ".wav";
       var num_instr = (possible_instruments.indexOf(instr_assignment) + 2)
+      var correct_button = (possible_instruments.indexOf(instr_assignment) + 1)
 
       if (eq_assignment != "control"){
         variables = eq_assignment.split("_")
@@ -86,6 +90,7 @@
       eq_assignment: eq_assignment,
       instr_assignment: instr_assignment,
       num_instr: num_instr,
+      correct_button: correct_button,
       set: i % 3,
       m1: m1,
       m2: m2,
@@ -238,7 +243,8 @@
       // response_allowed_while_playing: false,
       response_allowed_while_playing: true,
       data: {
-        correct_response: jsPsych.timelineVariable('num_instr'),
+        correct_button_response: jsPsych.timelineVariable('correct_button'),
+        num_instr: jsPsych.timelineVariable('num_instr'),
         task: 'trials',
         stimulus: jsPsych.timelineVariable('stimulus'),
         eq_assignment: jsPsych.timelineVariable('eq_assignment'),

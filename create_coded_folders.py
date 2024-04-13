@@ -1,7 +1,7 @@
 import argparse
 import os
 
-def create_folders(input_folder):
+def create_folders(input_folder, m1_freq, m2_freq):
     # Create output folders if they don't exist
 
     output_folder = os.path.join(input_folder, 'output')
@@ -13,7 +13,6 @@ def create_folders(input_folder):
 
     m1_options = ["m1cut", "m1boost", "m1control"]
     db_levels = ["3dB", "7dB"]
-    q_levels = ["q0", "q1"]
 
     # Loop through each combination and create the directories
     for m1 in m1_options:
@@ -27,10 +26,19 @@ def create_folders(input_folder):
             m2_options = ["m2cut", "m2boost"]
 
         for m2 in m2_options:
+
+            if (m1 == "m1boost"):
+                center_freq = m1_freq
+            elif (m2 == "m2boost"):
+                center_freq = m2_freq
+            elif (m1 == "m1cut"):
+                center_freq = m2_freq
+            else:
+                center_freq = m1_freq
+    
             for db_level in db_levels:
-                for q_level in q_levels:
-                    directory_path = os.path.join(output_folder, f"{m1}_{m2}_{db_level}_{q_level}")
-                    os.makedirs(directory_path, exist_ok=True)
+                directory_path = os.path.join(output_folder, f"{m1}_{m2}_{db_level}_{center_freq}")
+                os.makedirs(directory_path, exist_ok=True)
 
 
 # EXAMPLE - $ python3 create_coded_folders.py "audio\set1"
@@ -41,9 +49,9 @@ def create_folders(input_folder):
 #     create_folders(args.input_folder)
 
 def main():
-    create_folders("audio\set0")
-    create_folders("audio\set1")
-    create_folders("audio\set2")
+    create_folders("audio\set0", 100, 200)
+    create_folders("audio\set1", 300, 400)
+    create_folders("audio\set2", 500, 600)
 
 if __name__ == "__main__":
     main()
