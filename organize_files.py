@@ -55,10 +55,8 @@ def sort_files(parent_folder):
 #     args = parser.parse_args()
 #     sort_files(args.input_folder)
 
-def main():
-    sort_files("audio\set0")
-    sort_files("audio\set1")
-    sort_files("audio\set2")
+def main(folder):
+    sort_files(folder)
 
 if __name__ == "__main__":
     main()

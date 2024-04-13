@@ -18,9 +18,8 @@ def normalize_headphone_check(folder):
     output_file.export(os.path.join(folder, "norm_noise_calib_stim.wav"), format="wav")
 
     
-
-def main():
-    normalize_headphone_check("headphone_check_files")
+def main(folder):
+    normalize_headphone_check(folder)
 
 if __name__ == "__main__":
     main()

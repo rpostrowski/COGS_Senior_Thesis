@@ -105,10 +105,8 @@ def equalize_folder(input_folder, output_folder, center_freq, q_factor, gain):
     # parser.add_argument('gain', type=int)
     # equalize_folder(args.input_folder, args.output_folder, args.center_freq, args.q_factor, args.gain)
 
-def main():
-    treat_prepped_folder("audio\set0", 100, 200, 1.5) # bass and kick
-    treat_prepped_folder("audio\set1", 300, 400, 1.5) # electric and bass
-    treat_prepped_folder("audio\set2", 500, 600, 1.5) # electric and electric
+def main(folder, m1_freq, m2_freq, q_factor):
+    treat_prepped_folder(folder, m1_freq, m2_freq, q_factor)
 
 if __name__ == "__main__":
     main()

@@ -48,10 +48,8 @@ def combine_files(parent_folder):
 #     args = parser.parse_args()
 #     combine_files(args.parent_folder)
 
-def main():
-    combine_files("audio\set0\output")
-    combine_files("audio\set1\output")
-    combine_files("audio\set2\output")
+def main(folder):
+    combine_files(folder)
 
 if __name__ == "__main__":
     main()
