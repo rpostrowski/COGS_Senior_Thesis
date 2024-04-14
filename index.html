@@ -5,6 +5,7 @@
     <script src="jspsych/jspsych.js"></script>
     <script src="jspsych/plugin-preload.js"></script>
     <script src="jspsych/plugin-html-keyboard-response.js"></script>
+    <script src="jspsych/plugin-html-button-response.js"></script>
     <script src="jspsych/plugin-audio-button-response.js"></script>
     <link rel="stylesheet" href="style.css" type="text/css">
     <link href="jspsych/jspsych.css" rel="stylesheet" type="text/css" />
@@ -27,7 +28,7 @@
       on_finish: function() {
         // Display data
         jsPsych.data.displayData();
-        window.location = "https://app.prolific.co/submissions/complete?cc=C1AW14RU";
+        // window.location = "https://app.prolific.co/submissions/complete?cc=C1AW14RU";
       }
     });
 
@@ -52,12 +53,20 @@
 
   // CONDITION ASSIGNMENTS
     var possible_alignments = ['control',
-                              'm1boost_m2control_3dB', 'm1boost_m2control_7dB',
-                              'm1boost_m2cut_3dB', 'm1boost_m2cut_7dB',
-                              'm1control_m2boost_3dB', 'm1control_m2boost_7dB',
-                              'm1control_m2cut_3dB', 'm1control_m2cut_7dB',
-                              'm1cut_m2boost_3dB', 'm1cut_m2boost_7dB',
-                              'm1cut_m2control_3dB', 'm1cut_m2control_7dB'];
+                              'mirrored',
+                              'm1boost_m2control_5dB',
+                              'm1boost_m2control_10dB',
+                              'm1boost_m2cut_5dB',
+                              'm1boost_m2cut_10dB',
+                              'm1control_m2boost_5dB',
+                              'm1control_m2boost_10dB',
+                              'm1control_m2cut_5dB',
+                              'm1control_m2cut_10dB',
+                              'm1cut_m2boost_5dB',
+                              'm1cut_m2boost_10dB',
+                              'm1cut_m2control_5dB',
+                              'm1cut_m2control_10dB'
+                            ];
                             
                           
     var possible_instruments = ["2_two_instr_norm", "3_one_extra_norm", "4_two_extra_norm", "5_three_extra_norm"]
@@ -138,8 +147,8 @@
 
     timeline.push(welcome);
 
-// HEADPHONE CHECK
 
+// HEADPHONE CHECK
 var headphones_intro = {
       type: jsPsychHtmlKeyboardResponse,
       stimulus: `First, we'll go through a quick exercise to make sure you're wearing headphones.<br><br>
@@ -287,6 +296,42 @@ var headphones_intro = {
   };
 
   timeline.push(trials);
+
+  // POST QUESTION
+  // Define the trial with two audio players and two buttons
+    var post_question = {
+      timeline: [
+        { 
+          type: jsPsychHtmlButtonResponse,
+          stimulus: function() {
+            // HTML for audio players and buttons
+            var html = '<div>';            
+            // Text prompt
+            html += '<p>Please listen to these two audio mixes:</p>';
+            // Audio player 1
+            html += '<audio controls id="audio1"><source src="' + jsPsych.timelineVariable('audioFileA') + '" type="audio/mpeg"></audio>';
+            // Audio player 2
+            html += '<audio controls id="audio2"><source src="' + jsPsych.timelineVariable('audioFileB') + '" type="audio/mpeg"></audio>';
+            html += '<p>And select in which file you can more clearly hear two instruments playing.</p>';
+            html += '</div>';
+            return html;
+          },
+          choices: ['Mix 1', 'Mix 2'],
+          data: {
+            audioFileA: jsPsych.timelineVariable('audioFileA'),
+            audioFileB: jsPsych.timelineVariable('audioFileB'),
+            equalized: jsPsych.timelineVariable('equalized')}
+      }
+    ],
+      timeline_variables: [
+      { audioFileA: 'audio/set0/output/control/2_two_instr_norm.wav', audioFileB: 'audio/set0/output/mirrored/2_two_instr_norm.wav', equalized: 1},
+      { audioFileA: 'audio/set1/output/mirrored/2_two_instr_norm.wav', audioFileB: 'audio/set1/output/control/2_two_instr_norm.wav', equalized: 0},
+      { audioFileA: 'audio/set2/output/control/2_two_instr_norm.wav', audioFileB: 'audio/set2/output/mirrored/2_two_instr_norm.wav', equalized: 1},
+      ],
+      randomize_order: true
+    };
+
+  timeline.push(post_question);
 
   const save_data = {
       type: jsPsychPipe,

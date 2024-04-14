@@ -9,7 +9,6 @@ from pydub import AudioSegment
 
 def match_target_amplitude(sound, target_dBFS):
     change_in_dBFS = target_dBFS - sound.dBFS
-    print(sound.dBFS)
     return sound.apply_gain(change_in_dBFS)
    
 def treat_prepped_folder(input_folder, m1_freq, m2_freq, q_factor):
@@ -27,14 +26,14 @@ def treat_prepped_folder(input_folder, m1_freq, m2_freq, q_factor):
         center_freq = m1_freq if filename == "m1.wav" else m2_freq
 
         # For the four gain options...
-        for gain in [-7, -3, 3, 7]:
+        for gain in [-10, -5, 5, 10]:
             
             # Create an instance of the custom equalizer
             num_bands = 1
             eq = yodel.filter.ParametricEQ(sample_rate, num_bands)
 
             # Set parameters for the band
-            eq.set_band(0, center_freq, 1.5, gain)
+            eq.set_band(0, center_freq, q_factor, gain)
 
             # Process the input signal
             output_signal = input_signal.copy()
@@ -53,6 +52,36 @@ def treat_prepped_folder(input_folder, m1_freq, m2_freq, q_factor):
             new_segment = AudioSegment.from_file(output_path)
             new_segment_normalized = match_target_amplitude(new_segment, pre_eq_dB)
             new_segment_normalized.export(output_path, format="wav")
+
+
+        sample_rate, input_signal = wav.read(os.path.join(input_folder, filename))
+
+        # Then, create a file of each that has BOTH EQ bands
+        num_bands = 2
+        eq2 = yodel.filter.ParametricEQ(sample_rate, num_bands)
+
+        # Set parameters for the band
+        eq2.set_band(0, m1_freq, q_factor, gain)
+        eq2.set_band(1, m2_freq, q_factor, gain)
+
+        # Process the input signal
+        output_signal = input_signal.copy()
+        eq2.process(input_signal, output_signal)
+
+        # Prep the features for file coding
+        which_file = "m1" if filename == "m1.wav" else "m2"
+
+        # Write the processed signal to a new WAV file
+        output_file_name = f"{which_file}_mirrored.wav"
+        output_path = os.path.join(input_folder, output_file_name)
+        wav.write(output_path, sample_rate, output_signal)
+
+        new_segment = AudioSegment.from_file(output_path)
+        new_segment_normalized = match_target_amplitude(new_segment, pre_eq_dB)
+        new_segment_normalized.export(output_path, format="wav")
+
+    print("done")
+    return
 
 # NOT USED
 def equalize_file(input_path, output_path, center_freq, q_factor, gain):
@@ -100,7 +129,6 @@ def equalize_folder(input_folder, output_folder, center_freq, q_factor, gain):
         output_path = os.path.join(output_folder, "april4new.wav")
         wav.write(output_path, sample_rate, output_signal)
 
-
 # EXAMPLE - $ python3 batch_eq.py "set0" 202
 # def main():
     # parser = argparse.ArgumentParser(description='Apply batch equalization to WAV files in a folder.')
@@ -121,6 +149,9 @@ def equalize_folder(input_folder, output_folder, center_freq, q_factor, gain):
 
 def main(folder, m1_freq, m2_freq, q_factor):
     treat_prepped_folder(folder, m1_freq, m2_freq, q_factor)
+
+# def main():
+#     equalize_file("audio/set2/m2.wav", "audio/set/m2boost_10dB.wav", 1180, 1, 10)
 
 if __name__ == "__main__":
     main()

@@ -24,7 +24,9 @@ def sort_files(parent_folder):
         if (folder == "control"):
             shutil.copy2(os.path.join(parent_folder,"m1.wav"), os.path.join(folder_path, "m1.wav"))
             shutil.copy2(os.path.join(parent_folder, "m2.wav"), os.path.join(folder_path, "m2.wav"))
-
+        elif (folder == "mirrored"):
+            shutil.copy2(os.path.join(parent_folder,"m1_mirrored.wav"), os.path.join(folder_path, "m1_mirrored.wav"))
+            shutil.copy2(os.path.join(parent_folder, "m2_mirrored.wav"), os.path.join(folder_path, "m2_mirrored.wav"))
         # For all other folders...
         else:
             # Extract useful info from folder name
