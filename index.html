@@ -231,6 +231,7 @@ var headphones_intro = {
       on_finish: function(data){
         data.correct = (data.response === data.correct_response);
         console.log(data.correct);
+        jsPsych.setProgressBar(jsPsych.getProgressBarCompleted() + 0.166667);
       }
     }
 
@@ -246,7 +247,6 @@ var headphones_intro = {
     var headphone_eval = {
       type: jsPsychHtmlKeyboardResponse,
       stimulus: function() {
-
         var trials = jsPsych.data.get().filter({task: 'headphone_check'});
         var correct_trials = trials.filter({correct: true});
         if (correct_trials.count() > 4)
@@ -255,12 +255,17 @@ var headphones_intro = {
         else
         return"<p>You didn't pass the headphone check.</p>";
       },
+      on_start: function(data){
+        jsPsych.setProgressBar(100);
+      },
       on_finish: function(){
         var trials = jsPsych.data.get().filter({task: 'headphone_check'});
         var correct_trials = trials.filter({correct: true});
-        if (correct_trials.count() < 5)
+        if (correct_trials.count() < 5){
           jsPsych.endExperiment('Because you failed the headphone check, you have been disqualified from participating in this experiment.<br><br>You may now close this window.');
-        }
+        } else {
+          jsPsych.setProgressBar(0);
+        }}
     };
     
     timeline.push(headphone_eval);
@@ -282,7 +287,7 @@ var headphones_intro = {
   var trial = {
       type: jsPsychAudioButtonResponse,
       stimulus: jsPsych.timelineVariable('stimulus'),
-      prompt: "How many instruments are playing?",
+      prompt: "<br>How many instruments are playing?",
       choices: ['One', 'Two', 'Three', 'Four', 'Five', 'Six'],
       response_allowed_while_playing: false,
       // response_allowed_while_playing: true,
