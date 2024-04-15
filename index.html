@@ -174,7 +174,7 @@ var headphones_intro = {
       stimulus: "headphone_check_files/norm_noise_calib_stim.wav",
       prompt: "<br>🔈  🔉  🔊<br><br>Please adjust your volume so that the tone is playing at a comfortable volume.",
       choices: ["Replay tone", "Volume is good!"],
-      response_allowed_while_playing: true,
+      response_allowed_while_playing: false,
       on_finish: function(data){
         console.log(data.response)
 
@@ -222,8 +222,8 @@ var headphones_intro = {
       stimulus: jsPsych.timelineVariable('stimulus'),
       prompt: "<br>Which tone was the softest?",
       choices: ['First', 'Second', 'Third'],
-      // response_allowed_while_playing: false,
-      response_allowed_while_playing: true,
+      response_allowed_while_playing: false,
+      // response_allowed_while_playing: true,
       data: {
         task: 'headphone_check',
         correct_response: jsPsych.timelineVariable('correct_response')
@@ -284,8 +284,8 @@ var headphones_intro = {
       stimulus: jsPsych.timelineVariable('stimulus'),
       prompt: "How many instruments are playing?",
       choices: ['One', 'Two', 'Three', 'Four', 'Five', 'Six'],
-      // response_allowed_while_playing: false,
-      response_allowed_while_playing: true,
+      response_allowed_while_playing: false,
+      // response_allowed_while_playing: true,
       data: {
         correct_button_response: jsPsych.timelineVariable('correct_button'),
         num_instr: jsPsych.timelineVariable('num_instr'),
