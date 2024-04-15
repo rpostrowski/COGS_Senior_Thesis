@@ -25,6 +25,9 @@
 
     const jsPsych = initJsPsych({
       display_element: 'jspsych-target',
+      show_progress_bar: true,
+      auto_update_progress_bar: false,
+      message_progress_bar: 'Trials completed:',
       on_finish: function() {
         // Display data
         jsPsych.data.displayData();
@@ -171,7 +174,7 @@ var headphones_intro = {
       stimulus: "headphone_check_files/norm_noise_calib_stim.wav",
       prompt: "<br>🔈  🔉  🔊<br><br>Please adjust your volume so that the tone is playing at a comfortable volume.",
       choices: ["Replay tone", "Volume is good!"],
-      response_allowed_while_playing: false,
+      response_allowed_while_playing: true,
       on_finish: function(data){
         console.log(data.response)
 
@@ -219,8 +222,8 @@ var headphones_intro = {
       stimulus: jsPsych.timelineVariable('stimulus'),
       prompt: "<br>Which tone was the softest?",
       choices: ['First', 'Second', 'Third'],
-      response_allowed_while_playing: false,
-      // response_allowed_while_playing: true,
+      // response_allowed_while_playing: false,
+      response_allowed_while_playing: true,
       data: {
         task: 'headphone_check',
         correct_response: jsPsych.timelineVariable('correct_response')
@@ -279,10 +282,10 @@ var headphones_intro = {
   var trial = {
       type: jsPsychAudioButtonResponse,
       stimulus: jsPsych.timelineVariable('stimulus'),
-      prompt: "<br>How many instruments are playing?",
+      prompt: "How many instruments are playing?",
       choices: ['One', 'Two', 'Three', 'Four', 'Five', 'Six'],
-      response_allowed_while_playing: false,
-      // response_allowed_while_playing: true,
+      // response_allowed_while_playing: false,
+      response_allowed_while_playing: true,
       data: {
         correct_button_response: jsPsych.timelineVariable('correct_button'),
         num_instr: jsPsych.timelineVariable('num_instr'),
@@ -295,6 +298,9 @@ var headphones_intro = {
         m2: jsPsych.timelineVariable('m2'),
         gain: jsPsych.timelineVariable('gain')
       },
+      on_finish: function(data){
+        jsPsych.setProgressBar(jsPsych.getProgressBarCompleted() + 0.083333);
+      }
     }
 
   var trials = {
@@ -314,6 +320,9 @@ var headphones_intro = {
                   <b>Your task is to choose in which clip you can more clearly hear that there are two instruments playing.</b><br><br>
                   Ready?  Press the space bar to continue. `,
         choices: " ",
+        on_finish: function(data){
+        jsPsych.setProgressBar(0);
+      }
       }
 
     timeline.push(post_instr);
@@ -339,7 +348,10 @@ var headphones_intro = {
           data: {
             audioFileA: jsPsych.timelineVariable('audioFileA'),
             audioFileB: jsPsych.timelineVariable('audioFileB'),
-            equalized: jsPsych.timelineVariable('equalized')}
+            equalized: jsPsych.timelineVariable('equalized')},
+          on_finish: function(data){
+            jsPsych.setProgressBar(jsPsych.getProgressBarCompleted() + 0.333333);
+          }
       }
     ],
       timeline_variables: [
