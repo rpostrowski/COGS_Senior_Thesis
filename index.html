@@ -23,6 +23,12 @@
   </body>
   <script>
 
+  async function createExperiment(){
+
+    const expID = "BudjnE99T8qm";
+
+    const condition = await jsPsychPipe.getCondition(expID);
+
     const jsPsych = initJsPsych({
       display_element: 'jspsych-target',
       show_progress_bar: true,
@@ -49,12 +55,9 @@
       session_id: session_id
     });
 
-
-    const condition = await jsPsychPipe.getCondition(experiment_id)
-
     var timeline = [];
 
-  // CONDITION ASSIGNMENTS
+    // CONDITION ASSIGNMENTS
     var possible_alignments = [
       'control',
       'control',
@@ -74,20 +77,25 @@
       'mirrored_8dB',
     ];
                             
-                          
+                            
     var possible_instruments = ["2_two_instr_norm", "3_one_extra_norm", "4_two_extra_norm", "5_three_extra_norm"]
 
     var eq_assignments = jsPsych.randomization.sampleWithReplacement(possible_alignments, 12)
     var song_order_options = [[0,1,2],[0,2,1],[1,2,0],[1,0,2],[2,1,0],[2,0,1]]
-    var instr_order = [jsPsych.randomization.sampleWithoutReplacement(possible_instruments, 4),
-                      jsPsych.randomization.sampleWithoutReplacement(possible_instruments, 4),
-                      jsPsych.randomization.sampleWithoutReplacement(possible_instruments, 4)]
+
+    var instr_order = [
+      jsPsych.randomization.sampleWithoutReplacement(possible_instruments, 4),
+      jsPsych.randomization.sampleWithoutReplacement(possible_instruments, 4),
+      jsPsych.randomization.sampleWithoutReplacement(possible_instruments, 4)
+    ]
 
     folders = ["audio/set0/output", "audio/set1/output", "audio/set2/output"]
 
-    var song_order = [folders[song_order_options[condition][0]],
-                      folders[song_order_options[condition][1]],
-                      folders[song_order_options[condition][2]]]
+    var song_order = [
+      folders[song_order_options[condition][0]],
+      folders[song_order_options[condition][1]],
+      folders[song_order_options[condition][2]]
+    ]
 
     // console.log(song_order);
     // console.log(instr_order);
@@ -160,8 +168,8 @@
     timeline.push(welcome);
 
 
-// HEADPHONE CHECK
-var headphones_intro = {
+    // HEADPHONE CHECK
+    var headphones_intro = {
       type: jsPsychHtmlKeyboardResponse,
       stimulus: `First, we'll go through a quick exercise to make sure you're wearing headphones.<br><br>
                 Set your volume at 25%, then press the space bar to continue.`,
@@ -179,7 +187,6 @@ var headphones_intro = {
       response_allowed_while_playing: true,
       on_finish: function(data){
         // console.log(data.response)
-
         if (data.response == 1) {
           jsPsych.endCurrentTimeline()
           // console.log("Continuing.")
@@ -267,27 +274,28 @@ var headphones_intro = {
           window.location = "https://app.prolific.com/submissions/complete?cc=CMQ4EB78";
         } else {
           jsPsych.setProgressBar(0);
-        }}
+        }
+      }
     };
     
     timeline.push(headphone_eval);
 
-// TRIALS
+    // TRIALS
 
-  var experiment_instr = {
-        type: jsPsychHtmlKeyboardResponse,
-        stimulus: `Now, it's time for the experiment.<br><br>
-                    In each of the following trials, you will hear an audio track that consists of one or more musicians, each
-                    playing a single instrument.<br><br>
-                    <b/>Your task is to report how many musicians you hear playing.</b><br><br>
-                    Each track will only play once!<br><br>
-                    Press the space bar to continue.`,
-        choices: " ",
-      }
+    var experiment_instr = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: `Now, it's time for the experiment.<br><br>
+                  In each of the following trials, you will hear an audio track that consists of one or more musicians, each
+                  playing a single instrument.<br><br>
+                  <b/>Your task is to report how many musicians you hear playing.</b><br><br>
+                  Each track will only play once!<br><br>
+                  Press the space bar to continue.`,
+      choices: " ",
+    }
 
     timeline.push(experiment_instr);
 
-  var trial = {
+    var trial = {
       type: jsPsychAudioButtonResponse,
       stimulus: jsPsych.timelineVariable('stimulus'),
       prompt: "<br>How many musicians are playing?",
@@ -310,76 +318,68 @@ var headphones_intro = {
       }
     }
 
-  var trials = {
-    timeline: [trial],
-    timeline_variables: possible_wavs,
-    randomize_order: false
-  };
+    var trials = {
+      timeline: [trial],
+      timeline_variables: possible_wavs,
+      randomize_order: false
+    };
 
-  timeline.push(trials);
+    timeline.push(trials);
 
-  // POST QUESTION
+    // POST QUESTION
 
-  var post_instr = {
-        type: jsPsychHtmlKeyboardResponse,
-        stimulus: `Thank you!  We have one more task for you.<br><br>
-                  Each of the following pairs of audio clips contain two instruments playing.<br><br>
-                  <b>Your task is to choose in which clip you can more clearly hear that there are two instruments playing.</b><br><br>
-                  Ready?  Press the space bar to continue. `,
-        choices: " ",
-        on_finish: function(data){
-        jsPsych.setProgressBar(0);
+    var post_instr = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: `Thank you!  We have one more task for you.<br><br>
+                Each of the following pairs of audio clips contain two instruments playing.<br><br>
+                <b>Your task is to choose in which clip you can more clearly hear that there are two instruments playing.</b><br><br>
+                Ready?  Press the space bar to continue. `,
+      choices: " ",
+      on_finish: function(data){
+      jsPsych.setProgressBar(0);
       }
-      }
+    }
 
     timeline.push(post_instr);
 
     var post_question = {
-      timeline: [
-        { 
-          type: jsPsychHtmlButtonResponse,
-          stimulus: function() {
-            // HTML for audio players and buttons
-            var html = '<div>';            
-            // Text prompt
-            html += '<p>Please listen to these two audio mixes:</p>';
-            // Audio player 1
-            html += '<audio controls id="audio1"><source src="' + jsPsych.timelineVariable('audioFileA') + '" type="audio/mpeg"></audio>';
-            // Audio player 2
-            html += '<audio controls id="audio2"><source src="' + jsPsych.timelineVariable('audioFileB') + '" type="audio/mpeg"></audio>';
-            html += '<p>And select in which file you can more clearly hear two instruments playing.</p>';
-            html += '</div>';
-            return html;
-          },
-          choices: ['Mix 1', 'Mix 2'],
-          data: {
-            audioFileA: jsPsych.timelineVariable('audioFileA'),
-            audioFileB: jsPsych.timelineVariable('audioFileB'),
-            equalized: jsPsych.timelineVariable('equalized')},
-          on_finish: function(data){
-            jsPsych.setProgressBar(jsPsych.getProgressBarCompleted() + 0.333333);
-          }
-      }
-    ],
+      timeline: [{ 
+        type: jsPsychHtmlButtonResponse,
+        stimulus: function() {
+          // HTML for audio players and buttons
+          var html = '<div>';            
+          // Text prompt
+          html += '<p>Please listen to these two audio mixes:</p>';
+          // Audio player 1
+          html += '<audio controls id="audio1"><source src="' + jsPsych.timelineVariable('audioFileA') + '" type="audio/mpeg"></audio>';
+          // Audio player 2
+          html += '<audio controls id="audio2"><source src="' + jsPsych.timelineVariable('audioFileB') + '" type="audio/mpeg"></audio>';
+          html += '<p>And select in which file you can more clearly hear two instruments playing.</p>';
+          html += '</div>';
+          return html;
+        },
+        choices: ['Mix 1', 'Mix 2'],
+        data: {
+          audioFileA: jsPsych.timelineVariable('audioFileA'),
+          audioFileB: jsPsych.timelineVariable('audioFileB'),
+          equalized: jsPsych.timelineVariable('equalized')
+        },
+        on_finish: function(data){
+          jsPsych.setProgressBar(jsPsych.getProgressBarCompleted() + 0.333333);
+        }
+      }],
+
       timeline_variables: [
-      { audioFileA: 'audio/set0/output/control/2_two_instr_norm.wav', audioFileB: 'audio/set0/output/mirrored_8dB/2_two_instr_norm.wav', equalized: 1},
-      { audioFileA: 'audio/set1/output/mirrored_8dB/2_two_instr_norm.wav', audioFileB: 'audio/set1/output/control/2_two_instr_norm.wav', equalized: 0},
-      { audioFileA: 'audio/set2/output/control/2_two_instr_norm.wav', audioFileB: 'audio/set2/output/mirrored_8dB/2_two_instr_norm.wav', equalized: 1},
+        { audioFileA: 'audio/set0/output/control/2_two_instr_norm.wav', audioFileB: 'audio/set0/output/mirrored_8dB/2_two_instr_norm.wav', equalized: 1},
+        { audioFileA: 'audio/set1/output/mirrored_8dB/2_two_instr_norm.wav', audioFileB: 'audio/set1/output/control/2_two_instr_norm.wav', equalized: 0},
+        { audioFileA: 'audio/set2/output/control/2_two_instr_norm.wav', audioFileB: 'audio/set2/output/mirrored_8dB/2_two_instr_norm.wav', equalized: 1},
       ],
       randomize_order: true,
-      };
-    
-  timeline.push(post_question);
+    };
+      
+    timeline.push(post_question);
 
-  var thank_you = {
-        type: jsPsychHtmlKeyboardResponse,
-        stimulus: `Thank you!`,
-        choices: " ",
-      }
-
-    timeline.push(thank_you);
-
-  const save_data = {
+    const save_data = {
       type: jsPsychPipe,
       action: "save",
       experiment_id: "REPLACE",
@@ -389,6 +389,18 @@ var headphones_intro = {
 
     timeline.push(save_data);
 
-  jsPsych.run(timeline);
+    var thank_you = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: `Thank you!`,
+      choices: " ",
+    }
+
+    timeline.push(thank_you);
+
+    jsPsych.run(timeline);
+  }
+
+  createExperiment();
+
   </script>
 </html>
