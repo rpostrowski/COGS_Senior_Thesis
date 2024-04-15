@@ -12,7 +12,7 @@ def create_folders(input_folder):
     os.makedirs(control, exist_ok=True)
 
     m1_options = ["m1cut", "m1boost", "m1control"]
-    db_levels = ["5dB", "10dB"]
+    db_levels = ["5dB", "8dB"]
 
     # Loop through each combination and create the directories
     for m1 in m1_options:
@@ -30,7 +30,8 @@ def create_folders(input_folder):
                 directory_path = os.path.join(output_folder, f"{m1}_{m2}_{db_level}")
                 os.makedirs(directory_path, exist_ok=True)
 
-    os.makedirs(os.path.join(output_folder, "mirrored"), exist_ok=True)
+    os.makedirs(os.path.join(output_folder, "mirrored_5dB"), exist_ok=True)
+    os.makedirs(os.path.join(output_folder, "mirrored_8dB"), exist_ok=True)
 
 
 # EXAMPLE - $ python3 create_coded_folders.py "audio\set1"

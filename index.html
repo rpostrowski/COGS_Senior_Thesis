@@ -53,19 +53,20 @@
 
   // CONDITION ASSIGNMENTS
     var possible_alignments = ['control',
-                              'mirrored',
+                              'mirrored_5dB',
+                              'mirrored_8dB',
                               'm1boost_m2control_5dB',
-                              'm1boost_m2control_10dB',
+                              'm1boost_m2control_8dB',
                               'm1boost_m2cut_5dB',
-                              'm1boost_m2cut_10dB',
+                              'm1boost_m2cut_8dB',
                               'm1control_m2boost_5dB',
-                              'm1control_m2boost_10dB',
+                              'm1control_m2boost_8dB',
                               'm1control_m2cut_5dB',
-                              'm1control_m2cut_10dB',
+                              'm1control_m2cut_8dB',
                               'm1cut_m2boost_5dB',
-                              'm1cut_m2boost_10dB',
+                              'm1cut_m2boost_8dB',
                               'm1cut_m2control_5dB',
-                              'm1cut_m2control_10dB'
+                              'm1cut_m2control_8dB'
                             ];
                             
                           
@@ -97,20 +98,26 @@
       var filePath = folder + "/" + eq_assignment + "/" + instr_assignment + ".wav";
       var num_instr = (possible_instruments.indexOf(instr_assignment) + 2);
       var correct_button = (possible_instruments.indexOf(instr_assignment) + 1);
-      var song = song_order_options[condition][i % 3]
+      var song = song_order_options[condition][i % 3];
 
-      if (eq_assignment != "control"){
+      if (eq_assignment == "mirrored_5dB" | eq_assignment == "mirrored_8dB") {
+        variables = eq_assignment.split("_")
+        var m1 = "mirrored"
+        var m2 = "mirrored"
+        var gain = variables[1];
+      } else if (eq_assignment != "control"){
         variables = eq_assignment.split("_")
         var m1 = variables[0];
         var m2 = variables[1];
         var gain = variables[2];
-        var freq = variables[3];
       } else {
         var m1 = "control";
         var m2 = "control";
         var gain = "control";
-        var freq = "control";
       }
+
+      // console.log(eq_assignment)
+      // console.log("here " + gain)
 
       string += (i+1) + " EQ:" + eq_assignment + " Instrs:" + instr_assignment + " Song:" + (song+1) + "\n"
 
@@ -212,8 +219,8 @@ var headphones_intro = {
       stimulus: jsPsych.timelineVariable('stimulus'),
       prompt: "<br>Which tone was the softest?",
       choices: ['First', 'Second', 'Third'],
-      // response_allowed_while_playing: false,
-      response_allowed_while_playing: true,
+      response_allowed_while_playing: false,
+      // response_allowed_while_playing: true,
       data: {
         task: 'headphone_check',
         correct_response: jsPsych.timelineVariable('correct_response')
@@ -240,7 +247,8 @@ var headphones_intro = {
         var trials = jsPsych.data.get().filter({task: 'headphone_check'});
         var correct_trials = trials.filter({correct: true});
         if (correct_trials.count() > 4)
-          return `<p>Great!  You passed the headphone check.</p>`
+          return `<p>Great!  You passed the headphone check.<br><br>
+                    Press the space bar to continue.`
         else
         return"<p>You didn't pass the headphone check.</p>";
       },
@@ -273,8 +281,8 @@ var headphones_intro = {
       stimulus: jsPsych.timelineVariable('stimulus'),
       prompt: "<br>How many instruments are playing?",
       choices: ['One', 'Two', 'Three', 'Four', 'Five', 'Six'],
-      // response_allowed_while_playing: false,
-      response_allowed_while_playing: true,
+      response_allowed_while_playing: false,
+      // response_allowed_while_playing: true,
       data: {
         correct_button_response: jsPsych.timelineVariable('correct_button'),
         num_instr: jsPsych.timelineVariable('num_instr'),
@@ -292,13 +300,24 @@ var headphones_intro = {
   var trials = {
     timeline: [trial],
     timeline_variables: possible_wavs,
-    randomize_order: false,
+    randomize_order: false
   };
 
   timeline.push(trials);
 
   // POST QUESTION
-  // Define the trial with two audio players and two buttons
+
+  var post_instr = {
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: `Thank you!  We have one more task for you.<br><br>
+                  Each of the following pairs of audio clips contain two instruments playing.<br><br>
+                  <b>Your task is to choose in which clip you can more clearly hear that there are two instruments playing.</b><br><br>
+                  Ready?  Press the space bar to continue. `,
+        choices: " ",
+      }
+
+    timeline.push(post_instr);
+
     var post_question = {
       timeline: [
         { 
@@ -324,14 +343,22 @@ var headphones_intro = {
       }
     ],
       timeline_variables: [
-      { audioFileA: 'audio/set0/output/control/2_two_instr_norm.wav', audioFileB: 'audio/set0/output/mirrored/2_two_instr_norm.wav', equalized: 1},
-      { audioFileA: 'audio/set1/output/mirrored/2_two_instr_norm.wav', audioFileB: 'audio/set1/output/control/2_two_instr_norm.wav', equalized: 0},
-      { audioFileA: 'audio/set2/output/control/2_two_instr_norm.wav', audioFileB: 'audio/set2/output/mirrored/2_two_instr_norm.wav', equalized: 1},
+      { audioFileA: 'audio/set0/output/control/2_two_instr_norm.wav', audioFileB: 'audio/set0/output/mirrored_8dB/2_two_instr_norm.wav', equalized: 1},
+      { audioFileA: 'audio/set1/output/mirrored_8dB/2_two_instr_norm.wav', audioFileB: 'audio/set1/output/control/2_two_instr_norm.wav', equalized: 0},
+      { audioFileA: 'audio/set2/output/control/2_two_instr_norm.wav', audioFileB: 'audio/set2/output/mirrored_8dB/2_two_instr_norm.wav', equalized: 1},
       ],
-      randomize_order: true
-    };
-
+      randomize_order: true,
+      };
+    
   timeline.push(post_question);
+
+  var thank_you = {
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: `Thank you!`,
+        choices: " ",
+      }
+
+    timeline.push(thank_you);
 
   const save_data = {
       type: jsPsychPipe,

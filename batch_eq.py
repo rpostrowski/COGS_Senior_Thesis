@@ -26,7 +26,7 @@ def treat_prepped_folder(input_folder, m1_freq, m2_freq, q_factor):
         center_freq = m1_freq if filename == "m1.wav" else m2_freq
 
         # For the four gain options...
-        for gain in [-10, -5, 5, 10]:
+        for gain in [-8, -5, 5, 8]:
             
             # Create an instance of the custom equalizer
             num_bands = 1
@@ -56,29 +56,34 @@ def treat_prepped_folder(input_folder, m1_freq, m2_freq, q_factor):
 
         sample_rate, input_signal = wav.read(os.path.join(input_folder, filename))
 
-        # Then, create a file of each that has BOTH EQ bands
-        num_bands = 2
-        eq2 = yodel.filter.ParametricEQ(sample_rate, num_bands)
+        for gain in [5, 8]:
 
-        # Set parameters for the band
-        eq2.set_band(0, m1_freq, q_factor, gain)
-        eq2.set_band(1, m2_freq, q_factor, gain)
+            # Then, create a file of each that has BOTH EQ bands
+            num_bands = 2
+            eq2 = yodel.filter.ParametricEQ(sample_rate, num_bands)
 
-        # Process the input signal
-        output_signal = input_signal.copy()
-        eq2.process(input_signal, output_signal)
+            m1_gain = gain if filename == "m1.wav" else -gain
+            m2_gain = gain if filename == "m2.wav" else -gain
 
-        # Prep the features for file coding
-        which_file = "m1" if filename == "m1.wav" else "m2"
+            # Set parameters for the band
+            eq2.set_band(0, m1_freq, q_factor, m1_gain)
+            eq2.set_band(1, m2_freq, q_factor, m2_gain)
 
-        # Write the processed signal to a new WAV file
-        output_file_name = f"{which_file}_mirrored.wav"
-        output_path = os.path.join(input_folder, output_file_name)
-        wav.write(output_path, sample_rate, output_signal)
+            # Process the input signal
+            output_signal = input_signal.copy()
+            eq2.process(input_signal, output_signal)
 
-        new_segment = AudioSegment.from_file(output_path)
-        new_segment_normalized = match_target_amplitude(new_segment, pre_eq_dB)
-        new_segment_normalized.export(output_path, format="wav")
+            # Prep the features for file coding
+            which_file = "m1" if filename == "m1.wav" else "m2"
+
+            # Write the processed signal to a new WAV file
+            output_file_name = f"{which_file}_mirrored_{gain}dB.wav"
+            output_path = os.path.join(input_folder, output_file_name)
+            wav.write(output_path, sample_rate, output_signal)
+
+            new_segment = AudioSegment.from_file(output_path)
+            new_segment_normalized = match_target_amplitude(new_segment, pre_eq_dB)
+            new_segment_normalized.export(output_path, format="wav")
 
     print("done")
     return
