@@ -35,9 +35,8 @@
       auto_update_progress_bar: false,
       message_progress_bar: 'Trials completed:',
       on_finish: function() {
-        // Display data
         jsPsych.data.displayData();
-        // window.location = "https://app.prolific.com/submissions/complete?cc=C1AN17T8";
+        window.location = "https://app.prolific.com/submissions/complete?cc=C1AN17T8";
       }
     });
 
@@ -97,9 +96,6 @@
       folders[song_order_options[condition][2]]
     ]
 
-    // console.log(song_order);
-    // console.log(instr_order);
-
     var possible_wavs = [];
 
     var string = ""
@@ -129,9 +125,6 @@
         var gain = "control";
       }
 
-      // console.log(eq_assignment)
-      // console.log("here " + gain)
-
       string += (i+1) + " EQ:" + eq_assignment + " Instrs:" + instr_assignment + " Song:" + (song+1) + "\n"
 
       possible_wavs.push({
@@ -146,10 +139,6 @@
       m2: m2,
       gain: gain});
     }
-    
-    // console.log(possible_wavs)
-    // console.log(string)
-
 
     var preload = {
       type: jsPsychPreload,
@@ -162,7 +151,6 @@
                 <br>If you haven't done so already, please put on headphones and move to a quiet environment.<br><br>Then, press the space bar to begin.`,
       choices: " ",
       post_trial_gap: 500,
-      // on_finish: console.log("2,3,1,1,2,3")
       };
 
     timeline.push(welcome);
@@ -186,10 +174,8 @@
       choices: ["Replay tone", "Volume is good!"],
       response_allowed_while_playing: true,
       on_finish: function(data){
-        // console.log(data.response)
         if (data.response == 1) {
           jsPsych.endCurrentTimeline()
-          // console.log("Continuing.")
         }
       }
     }
@@ -238,7 +224,6 @@
       },
       on_finish: function(data){
         data.correct = (data.response === data.correct_response);
-        // console.log(data.correct);
         jsPsych.setProgressBar(jsPsych.getProgressBarCompleted() + 0.166667);
       }
     }
@@ -247,7 +232,6 @@
       timeline: [test],
       timeline_variables: headphone_audio,
       randomize_order: false,
-      // randomize_order: true,
     };
 
     timeline.push(headphone_check);
@@ -281,7 +265,6 @@
     timeline.push(headphone_eval);
 
     // TRIALS
-
     var experiment_instr = {
       type: jsPsychHtmlKeyboardResponse,
       stimulus: `Now, it's time for the experiment.<br><br>
@@ -327,7 +310,6 @@
     timeline.push(trials);
 
     // POST QUESTION
-
     var post_instr = {
       type: jsPsychHtmlKeyboardResponse,
       stimulus: `Thank you!  We have one more task for you.<br><br>
@@ -342,39 +324,84 @@
 
     timeline.push(post_instr);
 
+    var post_file_options = [
+      ['audio/set0/output/control/2_two_instr_norm.wav', 'audio/set0/output/mirrored_8dB/2_two_instr_norm.wav'],
+      ['audio/set1/output/control/2_two_instr_norm.wav', 'audio/set1/output/mirrored_8dB/2_two_instr_norm.wav'],
+      ['audio/set2/output/control/2_two_instr_norm.wav', 'audio/set2/output/mirrored_8dB/2_two_instr_norm.wav'],
+    ]
+
+    var control_or_mirrored = ['control', 'mirrored_8dB']
+
+    var post_order = []
+
+    for (var i = 0; i < 3; i++) {
+      var options = [1,0,jsPsych.randomization.sampleWithoutReplacement([0, 1], 1)[0]];
+      var shuffled = jsPsych.randomization.shuffle(options);
+      post_order = post_order.concat(shuffled);
+    }
+
     var post_question = {
-      timeline: [{ 
-        type: jsPsychHtmlButtonResponse,
-        stimulus: function() {
-          // HTML for audio players and buttons
-          var html = '<div>';            
-          // Text prompt
-          html += '<p>Please listen to these two audio mixes:</p>';
-          // Audio player 1
-          html += '<audio controls id="audio1"><source src="' + jsPsych.timelineVariable('audioFileA') + '" type="audio/mpeg"></audio>';
-          // Audio player 2
-          html += '<audio controls id="audio2"><source src="' + jsPsych.timelineVariable('audioFileB') + '" type="audio/mpeg"></audio>';
-          html += '<p>And select in which file you can more clearly hear two instruments playing.</p>';
-          html += '</div>';
-          return html;
-        },
-        choices: ['Mix 1', 'Mix 2'],
-        data: {
-          audioFileA: jsPsych.timelineVariable('audioFileA'),
-          audioFileB: jsPsych.timelineVariable('audioFileB'),
-          equalized: jsPsych.timelineVariable('equalized')
-        },
-        on_finish: function(data){
-          jsPsych.setProgressBar(jsPsych.getProgressBarCompleted() + 0.333333);
+      timeline: [
+        { 
+          type: jsPsychHtmlButtonResponse,
+          stimulus: function() {
+            var html = '<div>';            
+            html += '<p>Please listen to these three audio mixes:</p>';
+
+            html += '<audio controls id="audio1"><source src="' + jsPsych.timelineVariable('audioFileA') + '" type="audio/mpeg"></audio>';
+            html += '<audio controls id="audio2"><source src="' + jsPsych.timelineVariable('audioFileB') + '" type="audio/mpeg"></audio>';
+            html += '<audio controls id="audio3"><source src="' + jsPsych.timelineVariable('audioFileC') + '" type="audio/mpeg"></audio>';
+
+            html += '<p>And select which file is not like the other two.</p>';
+            html += '</div>';
+            return html;
+          },
+          choices: ['Mix 1', 'Mix 2', 'Mix 3'],
+          data: function() {
+            var eq_array = jsPsych.timelineVariable('eq_array');
+            var odd_man_out
+            if (eq_array[0] === eq_array[1]) {
+                odd_man_out = 2
+              } else if (eq_array[1] === eq_array[2]) {
+                odd_man_out = 0
+              } else {
+                odd_man_out = 1
+            };
+            return {
+              audioFileA: jsPsych.timelineVariable('audioFileA'),
+              audioFileB: jsPsych.timelineVariable('audioFileB'),
+              audioFileC: jsPsych.timelineVariable('audioFileC'),
+              eq_array: jsPsych.timelineVariable('eq_array'),
+              odd_man_out: odd_man_out
+            }
+          },
+          on_finish: function(data){
+            jsPsych.setProgressBar(jsPsych.getProgressBarCompleted() + 0.333333);
+          }
         }
-      }],
+      ],
 
       timeline_variables: [
-        { audioFileA: 'audio/set0/output/control/2_two_instr_norm.wav', audioFileB: 'audio/set0/output/mirrored_8dB/2_two_instr_norm.wav', equalized: 1},
-        { audioFileA: 'audio/set1/output/mirrored_8dB/2_two_instr_norm.wav', audioFileB: 'audio/set1/output/control/2_two_instr_norm.wav', equalized: 0},
-        { audioFileA: 'audio/set2/output/control/2_two_instr_norm.wav', audioFileB: 'audio/set2/output/mirrored_8dB/2_two_instr_norm.wav', equalized: 1},
+        {
+          audioFileA: post_file_options[0][post_order[0]],
+          audioFileB: post_file_options[0][post_order[1]],
+          audioFileC: post_file_options[0][post_order[2]],
+          eq_array: [control_or_mirrored[post_order[0]], control_or_mirrored[post_order[1]], control_or_mirrored[post_order[2]]]
+        },
+        {
+          audioFileA: post_file_options[1][post_order[3]],
+          audioFileB: post_file_options[1][post_order[4]],
+          audioFileC: post_file_options[1][post_order[5]],
+          eq_array: [control_or_mirrored[post_order[3]], control_or_mirrored[post_order[4]], control_or_mirrored[post_order[5]]]
+        },
+        {
+          audioFileA: post_file_options[2][post_order[6]],
+          audioFileB: post_file_options[2][post_order[7]],
+          audioFileC: post_file_options[2][post_order[8]],
+          eq_array: [control_or_mirrored[post_order[6]], control_or_mirrored[post_order[7]], control_or_mirrored[post_order[8]]]
+        }
       ],
-      randomize_order: true,
+      randomize_order: true
     };
       
     timeline.push(post_question);
