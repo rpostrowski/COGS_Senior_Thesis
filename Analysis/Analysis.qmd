@@ -1,5 +1,5 @@
 ---
-title: "Senior Thesis Analysis"
+title: "Senior Thesis Mock Analysis"
 format: 
   html:
     df-print: kable
