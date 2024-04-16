@@ -35,16 +35,17 @@
       auto_update_progress_bar: false,
       message_progress_bar: 'Trials completed:',
       on_finish: function() {
-        jsPsych.data.displayData();
+        // jsPsych.data.displayData();
         window.location = "https://app.prolific.com/submissions/complete?cc=C1AN17T8";
       }
     });
 
     // Capture info from Prolific
-    var subject_id = jsPsych.randomization.randomID(4);
-    // var subject_id = jsPsych.data.getURLVariable('PROLIFIC_PID');
+    var subject_id = jsPsych.data.getURLVariable('PROLIFIC_PID');
+    var backup_id = jsPsych.randomization.randomID(4);
     var study_id = jsPsych.data.getURLVariable('STUDY_ID');
     var session_id = jsPsych.data.getURLVariable('SESSION_ID');
+    const experiment_id = "BudjnE99T8qm";
 
 
     // DataPipe info
@@ -53,7 +54,8 @@
     jsPsych.data.addProperties({
       subject_id: subject_id,
       study_id: study_id,
-      session_id: session_id
+      session_id: session_id,
+      backup_id: backup_id
     });
 
     var timeline = [];
@@ -77,7 +79,6 @@
       'mirrored_5dB',
       'mirrored_8dB',
     ];
-                            
                             
     var possible_instruments = ["2_two_instr_norm", "3_one_extra_norm", "4_two_extra_norm", "5_three_extra_norm"]
 
@@ -108,7 +109,7 @@
       var instr_assignment = instr_order[i % 3][Math.floor(i / 3)];
       var filePath = folder + "/" + eq_assignment + "/" + instr_assignment + ".wav";
       var num_instr = (possible_instruments.indexOf(instr_assignment) + 2);
-      var correct_button = (possible_instruments.indexOf(instr_assignment) + 1);
+      // var correct_button = (possible_instruments.indexOf(instr_assignment) + 1);
       var song = song_order_options[condition][i % 3];
 
       if (eq_assignment == "mirrored_5dB" | eq_assignment == "mirrored_8dB") {
@@ -134,7 +135,7 @@
       eq_assignment: eq_assignment,
       instr_assignment: instr_assignment,
       num_instr: num_instr,
-      correct_button: correct_button,
+      // correct_button: correct_button,
       song: song,
       folder: folder,
       m1: m1,
@@ -152,7 +153,7 @@
       stimulus: `Welcome to the experiment!<br><br><b/>Please note that headphones are required for this experiment, and that background noise will make the task difficult.</b>
                 <br>If you haven't done so already, please put on headphones and move to a quiet environment.<br><br>Then, press the space bar to begin.`,
       choices: " ",
-      post_trial_gap: 500,
+      post_trial_gap: 250,
       };
 
     timeline.push(welcome);
@@ -162,7 +163,7 @@
     var headphones_intro = {
       type: jsPsychHtmlKeyboardResponse,
       stimulus: `First, we'll go through a quick exercise to make sure you're wearing headphones.<br><br>
-                Set your volume at 25%, then press the space bar to continue.`,
+                Set your volume at 20%, then press the space bar to continue.`,
       choices: " ",
     }
 
@@ -174,7 +175,7 @@
       stimulus: "headphone_check_files/norm_noise_calib_stim.wav",
       prompt: "<br>🔈  🔉  🔊<br><br>Please adjust your volume so that the tone is playing at a comfortable volume.",
       choices: ["Replay tone", "Volume is good!"],
-      response_allowed_while_playing: true,
+      response_allowed_while_playing: false,
       on_finish: function(data){
         if (data.response == 1) {
           jsPsych.endCurrentTimeline()
@@ -206,26 +207,28 @@
     timeline.push(headphones_instr);
 
     var headphone_audio = [
-      { stimulus: "headphone_check_files/norm_antiphase_HC_ISO.wav", correct_response: 1},
-      { stimulus: "headphone_check_files/norm_antiphase_HC_IOS.wav", correct_response: 2},
-      { stimulus: "headphone_check_files/norm_antiphase_HC_SOI.wav", correct_response: 0},
-      { stimulus: "headphone_check_files/norm_antiphase_HC_SIO.wav", correct_response: 0},
-      { stimulus: "headphone_check_files/norm_antiphase_HC_OSI.wav", correct_response: 1},
-      { stimulus: "headphone_check_files/norm_antiphase_HC_OIS.wav", correct_response: 2}
+      { hc_stimulus: "headphone_check_files/norm_antiphase_HC_ISO.wav", hc_response_key: 1},
+      { hc_stimulus: "headphone_check_files/norm_antiphase_HC_IOS.wav", hc_response_key: 2},
+      { hc_stimulus: "headphone_check_files/norm_antiphase_HC_SOI.wav", hc_response_key: 0},
+      { hc_stimulus: "headphone_check_files/norm_antiphase_HC_SIO.wav", hc_response_key: 0},
+      { hc_stimulus: "headphone_check_files/norm_antiphase_HC_OSI.wav", hc_response_key: 1},
+      { hc_stimulus: "headphone_check_files/norm_antiphase_HC_OIS.wav", hc_response_key: 2}
     ];
 
     var test = {
       type: jsPsychAudioButtonResponse,
-      stimulus: jsPsych.timelineVariable('stimulus'),
+      stimulus: jsPsych.timelineVariable('hc_stimulus'),
+      post_trial_gap: 250,
       prompt: "<br>Which tone was the softest?",
       choices: ['First', 'Second', 'Third'],
-      response_allowed_while_playing: true,
+      response_allowed_while_playing: false,
       data: {
         task: 'headphone_check',
-        correct_response: jsPsych.timelineVariable('correct_response')
+        hc_stimulus: jsPsych.timelineVariable('hc_stimulus'),
+        hc_response_key: jsPsych.timelineVariable('hc_response_key')
       },
       on_finish: function(data){
-        data.correct = (data.response === data.correct_response);
+        data.hc_correct = (data.response === data.hc_response_key);
         jsPsych.setProgressBar(jsPsych.getProgressBarCompleted() + 0.166667);
       }
     }
@@ -240,26 +243,29 @@
 
     var headphone_eval = {
       type: jsPsychHtmlKeyboardResponse,
+      trial_duration: 8000,
       stimulus: function() {
         var trials = jsPsych.data.get().filter({task: 'headphone_check'});
-        var correct_trials = trials.filter({correct: true});
-        if (correct_trials.count() > 4)
+        var correct_trials = trials.filter({hc_correct: true});
+        if (correct_trials.count() > 4) {
           return `<p>Great!  You passed the headphone check.<br><br>
                     Press the space bar to continue.`
-        else
-        return"<p>You didn't pass the headphone check.</p>";
+        } else {
+          jsPsychPipe.saveData(experiment_id, filename, jsPsych.data.get().csv());
+          return `<p>Because you failed the headphone check, you have been disqualified from participating in this experiment.<br><br>
+                    Press the space bar to be redirected back to Prolific.</p>`;  
+        }
       },
       on_start: function(data){
         jsPsych.setProgressBar(100);
       },
       on_finish: function(){
         var trials = jsPsych.data.get().filter({task: 'headphone_check'});
-        var correct_trials = trials.filter({correct: true});
-        if (correct_trials.count() < 5){
-          jsPsych.endExperiment('Because you failed the headphone check, you have been disqualified from participating in this experiment.<br><br>You may now close this window.');
-          window.location = "https://app.prolific.com/submissions/complete?cc=CMQ4EB78";
-        } else {
+        var correct_trials = trials.filter({hc_correct: true});
+        if (correct_trials.count() > 4) {
           jsPsych.setProgressBar(0);
+        } else {
+          window.location = "https://app.prolific.com/submissions/complete?cc=CMQ4EB78";
         }
       }
     };
@@ -283,13 +289,14 @@
     var trial = {
       type: jsPsychAudioButtonResponse,
       stimulus: jsPsych.timelineVariable('stimulus'),
+      post_trial_gap: 500,
       prompt: "<br>How many musicians are playing?",
       choices: ['One', 'Two', 'Three', 'Four', 'Five', 'Six'],
-      response_allowed_while_playing: true,
+      response_allowed_while_playing: false,
       data: {
-        correct_button_response: jsPsych.timelineVariable('correct_button'),
-        num_instr: jsPsych.timelineVariable('num_instr'),
+        // correct_button_response: jsPsych.timelineVariable('correct_button'),
         task: 'trials',
+        num_instr: jsPsych.timelineVariable('num_instr'),
         stimulus: jsPsych.timelineVariable('stimulus'),
         eq_assignment: jsPsych.timelineVariable('eq_assignment'),
         instr_assignment: jsPsych.timelineVariable('instr_assignment'),
@@ -315,8 +322,8 @@
     var post_instr = {
       type: jsPsychHtmlKeyboardResponse,
       stimulus: `Thank you!  We have one more task for you.<br><br>
-                Each of the following pairs of audio clips contain two instruments playing.<br><br>
-                <b>Your task is to choose in which clip you can more clearly hear that there are two instruments playing.</b><br><br>
+                Each of the following sets of audio clips feature two musicians playing.<br><br>
+                <b>Your task is to choose which of the three clips does not sound the same as the other two.</b><br><br>
                 Ready?  Press the space bar to continue. `,
       choices: " ",
       on_finish: function(data){
@@ -327,9 +334,9 @@
     timeline.push(post_instr);
 
     var post_file_options = [
-      ['audio/set0/output/control/2_two_instr_norm.wav', 'audio/set0/output/mirrored_8dB/2_two_instr_norm.wav'],
-      ['audio/set1/output/control/2_two_instr_norm.wav', 'audio/set1/output/mirrored_8dB/2_two_instr_norm.wav'],
-      ['audio/set2/output/control/2_two_instr_norm.wav', 'audio/set2/output/mirrored_8dB/2_two_instr_norm.wav'],
+      ['audio/set0/output/control/2_two_instr_norm.wav', 'audio/set0/output/mirrored_8dB/2_two_instr_norm.wav', 'set0'],
+      ['audio/set1/output/control/2_two_instr_norm.wav', 'audio/set1/output/mirrored_8dB/2_two_instr_norm.wav', 'set1'],
+      ['audio/set2/output/control/2_two_instr_norm.wav', 'audio/set2/output/mirrored_8dB/2_two_instr_norm.wav', 'set2'],
     ]
 
     var control_or_mirrored = ['control', 'mirrored_8dB']
@@ -358,6 +365,7 @@
             html += '</div>';
             return html;
           },
+          post_trial_gap: 500,
           choices: ['Mix 1', 'Mix 2', 'Mix 3'],
           data: function() {
             var eq_array = jsPsych.timelineVariable('eq_array');
@@ -370,9 +378,11 @@
                 odd_man_out = 1
             };
             return {
+              task: "question",
               audioFileA: jsPsych.timelineVariable('audioFileA'),
               audioFileB: jsPsych.timelineVariable('audioFileB'),
               audioFileC: jsPsych.timelineVariable('audioFileC'),
+              question_song: jsPsych.timelineVariable('question_song'),
               eq_array: jsPsych.timelineVariable('eq_array'),
               odd_man_out: odd_man_out
             }
@@ -382,24 +392,26 @@
           }
         }
       ],
-
       timeline_variables: [
         {
           audioFileA: post_file_options[0][post_order[0]],
           audioFileB: post_file_options[0][post_order[1]],
           audioFileC: post_file_options[0][post_order[2]],
+          question_song: post_file_options[0][2],
           eq_array: [control_or_mirrored[post_order[0]], control_or_mirrored[post_order[1]], control_or_mirrored[post_order[2]]]
         },
         {
           audioFileA: post_file_options[1][post_order[3]],
           audioFileB: post_file_options[1][post_order[4]],
           audioFileC: post_file_options[1][post_order[5]],
+          question_song: post_file_options[1][2],
           eq_array: [control_or_mirrored[post_order[3]], control_or_mirrored[post_order[4]], control_or_mirrored[post_order[5]]]
         },
         {
           audioFileA: post_file_options[2][post_order[6]],
           audioFileB: post_file_options[2][post_order[7]],
           audioFileC: post_file_options[2][post_order[8]],
+          question_song: post_file_options[2][2],
           eq_array: [control_or_mirrored[post_order[6]], control_or_mirrored[post_order[7]], control_or_mirrored[post_order[8]]]
         }
       ],
@@ -411,7 +423,7 @@
     const save_data = {
       type: jsPsychPipe,
       action: "save",
-      experiment_id: "BudjnE99T8qm",
+      experiment_id: experiment_id,
       filename: filename,
       data_string: ()=>jsPsych.data.get().csv()
     };
@@ -420,7 +432,7 @@
 
     var thank_you = {
       type: jsPsychHtmlKeyboardResponse,
-      stimulus: `Thank you!`,
+      stimulus: `Thank you!  Press the space bar to return to Prolific.`,
       choices: " ",
     }
 
