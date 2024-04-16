@@ -333,12 +333,12 @@
     timeline.push(post_instr);
 
     var post_file_options = [
-      ['audio/set0/output/control/2_two_instr_norm.wav', 'audio/set0/output/mirrored_8dB/2_two_instr_norm.wav', 'set0'],
-      ['audio/set1/output/control/2_two_instr_norm.wav', 'audio/set1/output/mirrored_8dB/2_two_instr_norm.wav', 'set1'],
-      ['audio/set2/output/control/2_two_instr_norm.wav', 'audio/set2/output/mirrored_8dB/2_two_instr_norm.wav', 'set2'],
+      ['audio/set0/output/control/2_two_instr_norm.wav', 'audio/set0/output/mirrored_5dB/2_two_instr_norm.wav', 'set0'],
+      ['audio/set1/output/control/2_two_instr_norm.wav', 'audio/set1/output/mirrored_5dB/2_two_instr_norm.wav', 'set1'],
+      ['audio/set2/output/control/2_two_instr_norm.wav', 'audio/set2/output/mirrored_5dB/2_two_instr_norm.wav', 'set2'],
     ]
 
-    var control_or_mirrored = ['control', 'mirrored_8dB']
+    var control_or_mirrored = ['control', 'mirrored_5dB']
 
     var post_order = []
 
@@ -383,7 +383,8 @@
               audioFileC: jsPsych.timelineVariable('audioFileC'),
               question_song: jsPsych.timelineVariable('question_song'),
               eq_array: jsPsych.timelineVariable('eq_array'),
-              odd_man_out: odd_man_out
+              odd_man_out: odd_man_out,
+              gain: 5
             }
           },
           on_finish: function(data){
@@ -397,21 +398,21 @@
           audioFileB: post_file_options[0][post_order[1]],
           audioFileC: post_file_options[0][post_order[2]],
           question_song: post_file_options[0][2],
-          eq_array: [control_or_mirrored[post_order[0]], control_or_mirrored[post_order[1]], control_or_mirrored[post_order[2]]]
+          eq_array: [control_or_mirrored[post_order[0]], control_or_mirrored[post_order[1]], control_or_mirrored[post_order[2]]],
         },
         {
           audioFileA: post_file_options[1][post_order[3]],
           audioFileB: post_file_options[1][post_order[4]],
           audioFileC: post_file_options[1][post_order[5]],
           question_song: post_file_options[1][2],
-          eq_array: [control_or_mirrored[post_order[3]], control_or_mirrored[post_order[4]], control_or_mirrored[post_order[5]]]
+          eq_array: [control_or_mirrored[post_order[3]], control_or_mirrored[post_order[4]], control_or_mirrored[post_order[5]]],
         },
         {
           audioFileA: post_file_options[2][post_order[6]],
           audioFileB: post_file_options[2][post_order[7]],
           audioFileC: post_file_options[2][post_order[8]],
           question_song: post_file_options[2][2],
-          eq_array: [control_or_mirrored[post_order[6]], control_or_mirrored[post_order[7]], control_or_mirrored[post_order[8]]]
+          eq_array: [control_or_mirrored[post_order[6]], control_or_mirrored[post_order[7]], control_or_mirrored[post_order[8]]],
         }
       ],
       randomize_order: true
