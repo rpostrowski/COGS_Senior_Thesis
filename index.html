@@ -49,7 +49,7 @@
 
 
     // DataPipe info
-    const filename = `${subject_id}.csv`;
+    const filename = `${subject_id}_${backup_id}.csv`;
 
     jsPsych.data.addProperties({
       subject_id: subject_id,
@@ -157,7 +157,6 @@
       };
 
     timeline.push(welcome);
-
 
     // HEADPHONE CHECK
     var headphones_intro = {
@@ -432,10 +431,18 @@
 
     var thank_you = {
       type: jsPsychHtmlKeyboardResponse,
-      stimulus: `Thank you!  Press the space bar to return to Prolific.`,
+      stimulus: `<div style="position: absolute; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 55%;">
+                <b>You have completed the experiment. Thank you for participating!</b><br><br>
+                In case you're curious about the task you just completed...<br><br>
+                We are looking at how the presence of one sound can obscure the presence of another, which is a phenomenon known as <i>auditory masking</i>.
+                In music, this masking can occur when there are multiple instruments in a song that occupy similar frequency ranges, such as kick drum and bass guitar.
+                <br><br>Your responses will be used to explore how different frequency equalization (EQ) treatments of individual musical tracks may affect a listener's ability to
+                identify them as coming from separate sources.<br><br>
+                <b>Press the space bar to return to Prolific.</b>
+            </div>`,
       choices: " ",
     }
-
+    
     timeline.push(thank_you);
 
     jsPsych.run(timeline);
