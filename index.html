@@ -289,7 +289,7 @@
     var trial = {
       type: jsPsychAudioButtonResponse,
       stimulus: jsPsych.timelineVariable('stimulus'),
-      post_trial_gap: 500,
+      post_trial_gap: 250,
       prompt: "<br>How many musicians are playing?",
       choices: ['One', 'Two', 'Three', 'Four', 'Five', 'Six'],
       response_allowed_while_playing: false,
@@ -365,7 +365,7 @@
             html += '</div>';
             return html;
           },
-          post_trial_gap: 500,
+          post_trial_gap: 250,
           choices: ['Mix 1', 'Mix 2', 'Mix 3'],
           data: function() {
             var eq_array = jsPsych.timelineVariable('eq_array');
