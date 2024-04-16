@@ -1,0 +1,174 @@
+---
+title: "Senior Thesis Analysis"
+format: 
+  html:
+    df-print: kable
+editor: visual
+---
+
+## Analysis
+
+```{r}
+#| label: Load R libraries
+#| warning: false
+#| message: false
+#| echo: false
+
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(ez)
+library(osfr)
+```
+
+```{r}
+#| label: Grab the data files
+#| include: false
+ 
+osf_retrieve_node("425wd") %>%
+   osf_ls_files() %>%
+   osf_download(path="data/", conflicts="skip")
+```
+
+```{r}
+#| label: Load data
+#| message: false
+
+csv.files <- list.files(path = "data", pattern = ".csv$", full.names = TRUE)
+
+data.list <- lapply(csv.files, read.csv)
+
+all_columns <- unique(unlist(lapply(data.list, colnames)))
+
+data.list <- lapply(data.list, function(df) {
+  missing_cols <- setdiff(all_columns, colnames(df))
+  if (length(missing_cols) > 0) {
+    for (col in missing_cols) {
+      df[[col]] <- NA
+    }
+  }
+  return(df)
+})
+
+data <- do.call(rbind, data.list)
+```
+
+```{r}
+#| label: Count number of subjects
+#| message: false
+
+n.subjects <- data %>% pull(subject_id) %>% unique() %>% length()
+```
+
+```{r}
+#| label: Look at headphone checks
+#| message: false
+
+headphone.trials <- filter(data,task == "headphone_check")
+
+failedheadphone.trials <- headphone.trials %>%
+  filter(hc_correct == "false")
+
+failed.headphone.subjs <- failedheadphone.trials %>%
+  group_by(subject_id) %>%
+  summarize(num_failures = sum(hc_correct == "false")) %>%
+  filter(num_failures > 1) %>%
+  nrow()
+```
+
+```{r}
+#| label: Clean up trial data
+#| message: false
+
+trial.data <- data %>%
+  filter(task == "trials")
+
+trial.data$eq_bands <- ifelse(grepl("^mirrored", trial.data$eq_assignment), 2,
+                        ifelse(trial.data$eq_assignment == "control", 0, 
+                                ifelse(grepl("^m", trial.data$eq_assignment), 1,
+                                       NA)))
+
+trial.data$inst_margin <- (trial.data$response + 1) - trial.data$num_instr
+```
+
+```{r}
+#| label: Initial plot of trial data
+#| message: false
+
+ggplot(trial.data, aes(factor(eq_bands), inst_margin, color = as.factor(gain))) +
+  geom_point(position = position_dodge(width = 0.1), size = 3, alpha = 0.6) +
+  labs(x = "Number of EQ Bands", y = "Reported Instruments Relative to Correct") +
+  theme_minimal() +
+  scale_color_manual(values = c("5dB" = "skyblue", "8dB" = "pink")) +
+  geom_smooth(method = "lm", se = FALSE, aes(group = gain))
+```
+
+```{r}
+#| label: Trial data, including averages
+#| message: false
+
+# Calculate average values for each condition
+averages <- trial.data %>%
+  group_by(eq_bands) %>%
+  summarize(avg_inst_margin = mean(inst_margin))
+
+# Create a subset of data containing only the average values for control, 1 EQ band, and 2 EQ bands
+average.points <- averages %>%
+  filter(eq_bands %in% c(0, 1, 2))
+
+# Create the plot
+ggplot(trial.data, aes(factor(eq_bands), inst_margin, color = as.factor(gain))) +
+  geom_point(position = position_dodge(width = 0.1), size = 3, alpha = 0.6) +
+  geom_point(data = average.points, aes(x = factor(eq_bands), y = avg_inst_margin),
+             color = "black", size = 3, shape = 19) +
+  labs(x = "Number of EQ Bands", y = "Reported Instruments Relative to Correct") +
+  theme_minimal() +
+  scale_color_manual(values = c("5dB" = "skyblue", "8dB" = "pink")) +
+  geom_smooth(method = "lm", se = FALSE, aes(group = gain))
+```
+
+```{r}
+#| label: Trial data faceted by num_instr
+#| message: false
+
+ggplot(trial.data, aes(factor(eq_bands), inst_margin, color = as.factor(gain))) +
+  geom_point(position = position_dodge(width = 0.1), size = 3, alpha = 0.6) +
+  labs(x = "Number of EQ Bands", y = "Reported Instruments Relative to Correct") +
+  theme_minimal() +
+  scale_color_manual(values = c("5dB" = "skyblue", "8dB" = "pink")) +
+  geom_smooth(method = "lm", se = FALSE, aes(group = gain)) +
+  facet_wrap(~ num_instr)
+```
+
+```{r}
+#| label: Trial data faceted by song
+#| message: false
+
+ggplot(trial.data, aes(factor(eq_bands), inst_margin, color = as.factor(gain))) +
+  geom_point(position = position_dodge(width = 0.1), size = 3, alpha = 0.6) +
+  labs(x = "Number of EQ Bands", y = "Reported Instruments Relative to Correct") +
+  theme_minimal() +
+  scale_color_manual(values = c("5dB" = "skyblue", "8dB" = "pink")) +
+  geom_smooth(method = "lm", se = FALSE, aes(group = gain)) +
+  facet_wrap(~ song)
+```
+
+```{r}
+#| label: Survey responses by song
+#| message: false
+
+question.data <- data %>%
+  filter(task == "question")
+
+question.data$q_correct = ifelse(question.data$response == question.data$odd_man_out, TRUE, FALSE)
+
+# Create the plot
+ggplot(question.data, aes(factor(question_song), fill = q_correct)) +
+  geom_bar(position = "fill") +
+  labs(x = "Song", y = "Proportion", fill = "Correct") +
+  scale_fill_manual(values = c("TRUE" = "skyblue", "FALSE" = "pink")) +
+  ggtitle("Proportions of Correct Responses by Song") +
+  theme_minimal()
+```
+
+\
